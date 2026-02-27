@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You Matter — Kind Words Board</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blush: #fde8e8;
+      --cream: #fdf6ee;
+      --primary: #e05a7a;
+      --primary-light: #f2849a;
+      --primary-dark: #c44868;
+      --text: #2d2d2d;
+      --text-muted: #6b7280;
+      --bg: #fffbf7;
+      --card: #ffffff;
+      --card-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      --radius: 16px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3 { font-family: 'Playfair Display', Georgia, serif; }
+
+    .page { display: none; min-height: 100vh; }
+    .page.active { display: block; }
+
+    /* ─── Buttons ─── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 32px; border-radius: 999px; border: none;
+      font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 600;
+      cursor: pointer; transition: all 0.25s ease; text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--primary); color: #fff;
+      box-shadow: 0 4px 16px rgba(224,90,122,0.25);
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      box-shadow: 0 6px 24px rgba(224,90,122,0.35);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: var(--blush); color: var(--primary);
+    }
+    .btn-secondary:hover { background: #fcdada; }
+    .btn-outline {
+      background: transparent; color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    .btn-outline:hover { background: var(--blush); }
+    .btn-sm { padding: 10px 20px; font-size: 0.9rem; }
+
+    /* ─── Inputs ─── */
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block; margin-bottom: 6px;
+      font-weight: 500; font-size: 0.9rem; color: var(--text);
+    }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb;
+      border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 1rem;
+      background: #fff; color: var(--text); transition: border-color 0.2s;
+      outline: none;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--primary-light);
+    }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-group .hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* ─── Animations ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .animate-fade-up {
+      animation: fadeUp 0.6s ease-out forwards;
+      opacity: 0;
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.8s ease-out forwards;
+      opacity: 0;
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.25s; }
+    .delay-3 { animation-delay: 0.4s; }
+    .delay-4 { animation-delay: 0.55s; }
+
+    /* ═══════════════════════════════════════
+       HOME PAGE
+       ═══════════════════════════════════════ */
+    .hero {
+      position: relative; overflow: hidden;
+      text-align: center; padding: 80px 24px 64px;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, var(--blush) 0%, var(--bg) 100%);
+      z-index: 0;
+    }
+    .hero > * { position: relative; z-index: 1; }
+    .hero .badge {
+      display: inline-block; font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--primary); margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(1.75rem, 5vw, 3.5rem);
+      font-weight: 600; line-height: 1.15;
+      max-width: 780px; margin: 0 auto;
+    }
+    .hero .subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--text-muted); max-width: 540px;
+      margin: 20px auto 0; line-height: 1.6;
+    }
+    .hero .cta { margin-top: 36px; }
+
+    /* How it works */
+    .how-section { padding: 80px 24px; max-width: 960px; margin: 0 auto; }
+    .how-section h2 { text-align: center; font-size: 2rem; margin-bottom: 48px; }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 28px; }
+    .step-card {
+      background: var(--card); border-radius: var(--radius); padding: 32px 24px;
+      text-align: center; box-shadow: var(--card-shadow);
+    }
+    .step-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--blush); display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .step-icon svg { width: 24px; height: 24px; color: var(--primary); }
+    .step-card h3 { font-size: 1.1rem; margin-bottom: 8px; font-family: 'Playfair Display', serif; }
+    .step-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* Example board */
+    .example-section {
+      background: var(--cream); padding: 80px 24px;
+    }
+    .example-section h2 { text-align: center; font-size: 2rem; }
+    .example-section .subtitle {
+      text-align: center; color: var(--text-muted);
+      max-width: 480px; margin: 12px auto 48px;
+    }
+    .example-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px; max-width: 800px; margin: 0 auto;
+    }
+    .example-card {
+      background: var(--card); border-radius: var(--radius); padding: 24px;
+      box-shadow: var(--card-shadow);
+    }
+    .example-card .author {
+      font-weight: 600; font-size: 0.95rem; margin-bottom: 8px;
+    }
+    .example-card .msg {
+      font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;
+      font-style: italic;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 48px 24px; text-align: center;
+    }
+    .footer p { font-size: 0.9rem; color: var(--text-muted); }
+    .footer .btn {
+      display: inline-flex; margin-top: 16px;
+    }
+
+    /* ═══════════════════════════════════════
+       CREATE PAGE
+       ═══════════════════════════════════════ */
+    .create-page {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 40px 24px;
+      background: linear-gradient(180deg, var(--blush) 0%, var(--bg) 40%);
+    }
+    .create-container {
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      padding: 48px 40px; width: 100%; max-width: 520px;
+    }
+    .create-container .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.9rem; color: var(--text-muted);
+      text-decoration: none; margin-bottom: 24px;
+    }
+    .create-container .back-link:hover { color: var(--primary); }
+    .create-container h1 {
+      font-size: 1.75rem; margin-bottom: 8px;
+    }
+    .create-container .desc {
+      color: var(--text-muted); margin-bottom: 32px; font-size: 0.95rem;
+    }
+
+    /* ═══════════════════════════════════════
+       BOARD PAGE
+       ═══════════════════════════════════════ */
+    .board-page {
+      min-height: 100vh;
+      background: linear-gradient(180deg, var(--blush) 0%, var(--bg) 30%);
+    }
+    .board-header {
+      text-align: center; padding: 48px 24px 32px;
+    }
+    .board-header h1 {
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      margin-bottom: 8px;
+    }
+    .board-header .board-subtitle {
+      color: var(--text-muted); font-size: 1.05rem;
+      max-width: 500px; margin: 0 auto;
+    }
+    .board-actions {
+      display: flex; gap: 12px; justify-content: center;
+      margin-top: 24px; flex-wrap: wrap;
+    }
+
+    .board-body { max-width: 880px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* Add message form */
+    .add-message-card {
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: var(--card-shadow); padding: 32px;
+      margin-bottom: 40px;
+    }
+    .add-message-card h3 {
+      font-size: 1.2rem; margin-bottom: 0;
+      font-family: 'Playfair Display', serif;
+    }
+    .add-message-card .card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px;
+    }
+    .add-message-card .close-btn {
+      width: 32px; height: 32px; border: none; background: none;
+      cursor: pointer; color: var(--text-muted); font-size: 1.3rem;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px; transition: background 0.2s;
+    }
+    .add-message-card .close-btn:hover { background: #f3f4f6; }
+
+    /* Option cards */
+    .msg-options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .msg-option {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 1.25rem; border-radius: 12px;
+      border: 1.5px solid rgba(224, 90, 122, 0.2);
+      background: #fff; cursor: pointer; transition: all 0.2s;
+    }
+    .msg-option:hover {
+      border-color: rgba(224, 90, 122, 0.45);
+      box-shadow: 0 2px 8px rgba(224, 90, 122, 0.08);
+      transform: translateY(-1px);
+    }
+    .msg-option .opt-icon {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; background: var(--blush);
+    }
+    .msg-option .opt-icon svg { width: 20px; height: 20px; }
+    .msg-option .opt-text h4 {
+      font-family: 'Inter', sans-serif; font-size: 0.95rem;
+      font-weight: 600; margin-bottom: 2px;
+    }
+    .msg-option .opt-text p {
+      font-size: 0.8rem; color: var(--text-muted); margin: 0;
+    }
+
+    /* Message form steps */
+    .msg-step { display: none; }
+    .msg-step.active { display: block; }
+
+    .inline-form {
+      display: grid; grid-template-columns: 1fr 2fr auto;
+      gap: 12px; align-items: end;
+    }
+    @media (max-width: 640px) {
+      .inline-form { grid-template-columns: 1fr; }
+    }
+
+    /* Guided prompts */
+    .prompt-step { margin-bottom: 20px; }
+    .prompt-step label {
+      display: block; font-weight: 600; font-size: 1rem;
+      margin-bottom: 10px; color: var(--text);
+      font-family: 'Inter', sans-serif;
+    }
+    .prompt-step textarea {
+      border: 2px solid var(--primary) !important;
+      min-height: 120px;
+    }
+    .prompt-nav {
+      display: flex; gap: 10px; align-items: center; margin-top: 16px;
+    }
+    .prompt-nav .btn-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 20px; border-radius: 999px;
+      border: 1.5px solid #e5e7eb; background: #fff;
+      font-family: 'Inter', sans-serif; font-size: 0.9rem;
+      font-weight: 500; color: var(--text-muted);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .prompt-nav .btn-back:hover { border-color: #ccc; color: var(--text); }
+    .prompt-nav .btn-next {
+      flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 12px 24px; border-radius: 999px; border: none;
+      background: var(--primary); color: #fff;
+      font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(224,90,122,0.25);
+    }
+    .prompt-nav .btn-next:hover {
+      background: var(--primary-dark);
+      box-shadow: 0 6px 24px rgba(224,90,122,0.35);
+    }
+    .prompt-nav .btn-next svg, .prompt-nav .btn-back svg {
+      width: 16px; height: 16px;
+    }
+
+    /* Segmented progress bar */
+    .guided-progress-bar {
+      display: flex; gap: 4px; margin-bottom: 1.25rem;
+    }
+    .guided-progress-bar .seg {
+      flex: 1; height: 6px; border-radius: 3px;
+      background: #e5e7eb; transition: background 0.3s;
+    }
+    .guided-progress-bar .seg.filled {
+      background: var(--primary);
+    }
+
+    /* Loading spinner */
+    .guided-loading {
+      display: none; flex-direction: column; align-items: center;
+      justify-content: center; padding: 48px 24px; text-align: center;
+    }
+    .guided-loading.active { display: flex; }
+    .spinner {
+      width: 36px; height: 36px; border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--primary); border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .guided-loading p {
+      font-size: 0.95rem; color: var(--text-muted); font-style: italic;
+    }
+
+    /* AI toast */
+    .ai-toast {
+      display: none; position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%); padding: 12px 24px;
+      background: #fef3c7; color: #92400e; border-radius: 10px;
+      font-size: 0.85rem; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      z-index: 2000; max-width: 440px; text-align: center;
+    }
+    .ai-toast.show { display: block; animation: fadeUp 0.3s ease-out; }
+
+    /* Preview note */
+    .preview-note {
+      font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;
+      font-style: italic;
+    }
+
+    /* Messages grid */
+    .messages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .message-card {
+      background: var(--card); border-radius: var(--radius);
+      padding: 24px; box-shadow: var(--card-shadow);
+      animation: fadeUp 0.4s ease-out forwards;
+      transition: transform 0.2s;
+    }
+    .message-card:hover { transform: translateY(-2px); }
+    .message-card .card-author {
+      font-weight: 600; font-size: 0.95rem; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .message-card .card-author .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--blush); display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.8rem; color: var(--primary);
+      flex-shrink: 0; overflow: hidden;
+    }
+    .message-card .card-author .avatar img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+
+    /* Photo upload */
+    .photo-upload {
+      display: flex; align-items: center; gap: 16px;
+    }
+    .photo-preview {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--blush); display: flex; align-items: center; justify-content: center;
+      overflow: hidden; flex-shrink: 0; border: 2px dashed #e5e7eb;
+      transition: border-color 0.2s;
+    }
+    .photo-preview.has-photo { border-style: solid; border-color: var(--primary-light); }
+    .photo-preview img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .photo-preview svg { color: #c0c0c0; }
+    .photo-upload-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 8px; border: 1px solid #e5e7eb;
+      background: #fff; font-family: 'Inter', sans-serif; font-size: 0.85rem;
+      color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+    }
+    .photo-upload-btn:hover { border-color: var(--primary-light); color: var(--primary); }
+    .photo-upload input[type="file"] { display: none; }
+
+    /* Board recipient photo */
+    .board-photo {
+      width: 96px; height: 96px; border-radius: 50%;
+      background: var(--blush); display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px; overflow: hidden;
+      border: 3px solid #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    .board-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .board-photo svg { color: #d0d0d0; }
+
+    /* Small photo in message form */
+    .photo-upload-sm { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+    .photo-preview-sm {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--blush); display: flex; align-items: center; justify-content: center;
+      overflow: hidden; flex-shrink: 0; border: 1.5px dashed #e5e7eb;
+    }
+    .photo-preview-sm.has-photo { border-style: solid; border-color: var(--primary-light); }
+    .photo-preview-sm img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-upload-sm label {
+      font-size: 0.8rem; color: var(--text-muted); cursor: pointer;
+      text-decoration: underline; text-underline-offset: 2px;
+    }
+    .photo-upload-sm label:hover { color: var(--primary); }
+    .photo-upload-sm input[type="file"] { display: none; }
+    .message-card .card-msg {
+      font-size: 0.9rem; color: var(--text-muted); line-height: 1.65;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .message-card .card-time {
+      font-size: 0.75rem; color: #b0b0b0; margin-top: 12px;
+    }
+
+    .empty-state {
+      text-align: center; padding: 64px 24px; color: var(--text-muted);
+    }
+    .empty-state .empty-heart { font-size: 3rem; margin-bottom: 16px; }
+    .empty-state p { font-size: 1rem; }
+
+    /* Share modal */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+      z-index: 1000; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--card); border-radius: var(--radius);
+      padding: 40px; max-width: 440px; width: 100%;
+      box-shadow: 0 16px 64px rgba(0,0,0,0.15);
+      animation: fadeUp 0.3s ease-out;
+    }
+    .modal h2 { font-size: 1.4rem; margin-bottom: 12px; }
+    .modal p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
+    .modal .share-url {
+      display: flex; gap: 8px;
+    }
+    .modal .share-url input {
+      flex: 1; padding: 12px 14px; border: 2px solid #e5e7eb;
+      border-radius: 10px; font-size: 0.9rem; font-family: 'Inter', sans-serif;
+      background: #f9fafb; outline: none;
+    }
+    .modal .share-url input:focus { border-color: var(--primary-light); }
+    .copied-toast {
+      display: none; margin-top: 12px; padding: 8px 16px;
+      background: #d1fae5; color: #065f46; border-radius: 8px;
+      font-size: 0.85rem; font-weight: 500; text-align: center;
+    }
+    .copied-toast.show { display: block; animation: fadeIn 0.3s ease-out; }
+
+    /* ═══════════════════════════════════════
+       NOT FOUND
+       ═══════════════════════════════════════ */
+    .notfound-page {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; text-align: center; padding: 24px;
+    }
+    .notfound-page h1 { font-size: 2.5rem; margin-bottom: 12px; }
+    .notfound-page p { color: var(--text-muted); margin-bottom: 24px; }
+
+    /* ═══════════════════════════════════════
+       RECIPIENT RESPONSE (on board page)
+       ═══════════════════════════════════════ */
+    .recipient-response {
+      background: var(--cream);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-top: 40px;
+      border: 1.5px solid rgba(224, 90, 122, 0.15);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .recipient-response .response-header {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--primary-dark);
+    }
+    .recipient-response .response-text {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .recipient-response .response-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 12px;
+    }
+
+    /* ═══════════════════════════════════════
+       RESPOND PAGE
+       ═══════════════════════════════════════ */
+    .respond-page {
+      min-height: 100vh;
+      background: linear-gradient(180deg, var(--blush) 0%, var(--bg) 30%);
+    }
+    .respond-invitation {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--card-shadow);
+      margin-top: 40px;
+      text-align: center;
+    }
+    .respond-invitation h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+    }
+    .respond-invitation p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+    .respond-invitation textarea {
+      width: 100%;
+      min-height: 120px;
+    }
+    .respond-existing {
+      background: var(--cream);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-top: 40px;
+      border: 1.5px solid rgba(224, 90, 122, 0.15);
+      text-align: center;
+    }
+    .respond-existing .response-text {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+      text-align: left;
+      margin: 16px 0;
+    }
+    .respond-existing .response-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* ═══════════════════════════════════════
+       MANAGE PAGE
+       ═══════════════════════════════════════ */
+    .manage-page {
+      max-width: 580px; margin: 0 auto; padding: 48px 20px 80px;
+    }
+    .manage-page h1 {
+      font-size: 1.6rem; margin-bottom: 4px; text-align: center;
+    }
+    .manage-page .manage-subtitle {
+      color: var(--text-muted); text-align: center; margin-bottom: 32px; font-size: 0.95rem;
+    }
+    .manage-card {
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: var(--card-shadow); padding: 24px; margin-bottom: 20px;
+    }
+    .manage-card h3 {
+      font-family: 'Playfair Display', serif; font-size: 1.1rem;
+      margin-bottom: 12px;
+    }
+    .manage-card p {
+      font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;
+    }
+    .manage-card .share-url input {
+      width: 100%; padding: 10px 12px; border: 2px solid #e5e7eb;
+      border-radius: 10px; font-size: 0.85rem; font-family: 'Inter', sans-serif;
+      background: #f9fafb; outline: none; margin-bottom: 8px;
+    }
+    .manage-warning {
+      background: #fffbeb; border: 1.5px solid #f59e0b;
+      border-radius: 12px; padding: 16px 20px;
+      font-size: 0.85rem; color: #92400e; line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .manage-warning strong { color: #78350f; }
+    .manage-status {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 16px;
+    }
+    .manage-status .manage-photo {
+      width: 56px; height: 56px; border-radius: 50%; background: var(--blush);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; flex-shrink: 0;
+      border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .manage-status .manage-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .manage-status .manage-info { flex: 1; }
+    .manage-status .manage-info .name {
+      font-weight: 600; font-size: 1rem; margin-bottom: 2px;
+    }
+    .manage-status .manage-info .meta {
+      font-size: 0.85rem; color: var(--text-muted);
+    }
+
+    /* Toggle switch */
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 4px 0;
+    }
+    .toggle-row .toggle-label {
+      font-size: 0.95rem; font-weight: 500;
+    }
+    .toggle-row .toggle-desc {
+      font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;
+    }
+    .toggle-switch {
+      position: relative; width: 48px; height: 26px; flex-shrink: 0;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-switch .slider {
+      position: absolute; inset: 0; background: #d1d5db;
+      border-radius: 26px; cursor: pointer; transition: background 0.25s;
+    }
+    .toggle-switch .slider::before {
+      content: ''; position: absolute; width: 20px; height: 20px;
+      left: 3px; bottom: 3px; background: #fff; border-radius: 50%;
+      transition: transform 0.25s;
+    }
+    .toggle-switch input:checked + .slider { background: var(--primary); }
+    .toggle-switch input:checked + .slider::before { transform: translateX(22px); }
+
+    /* Board closed note */
+    .board-closed-note {
+      text-align: center; padding: 20px 24px;
+      background: #fef3c7; border-radius: 12px;
+      color: #92400e; font-size: 0.9rem; font-weight: 500;
+      margin-top: 24px;
+    }
+
+    /* Creator link */
+    .creator-link {
+      display: block; text-align: center; margin-top: 48px;
+      font-size: 0.8rem; color: var(--text-muted);
+      text-decoration: none; padding: 12px;
+      transition: color 0.2s;
+    }
+    .creator-link:hover { color: var(--primary); }
+
+    /* Manage page invalid state */
+    .manage-invalid {
+      text-align: center; padding: 80px 24px; min-height: 60vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .manage-invalid h2 { font-size: 1.5rem; margin-bottom: 8px; }
+    .manage-invalid p { color: var(--text-muted); margin-bottom: 24px; }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 480px) {
+      .create-container { padding: 32px 24px; }
+      .add-message-card { padding: 24px; }
+      .board-header { padding: 32px 16px 24px; }
+      .respond-invitation { padding: 24px; }
+      .respond-existing { padding: 24px; }
+      .recipient-response { padding: 24px; }
+      .manage-page { padding: 32px 16px 64px; }
+      .manage-card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════ HOME PAGE ═══════════════ -->
+  <div id="page-home" class="page">
+    <header class="hero">
+      <p class="badge animate-fade-in">You Matter</p>
+      <h1 class="animate-fade-up delay-1">When someone is leaving, the connections don't have to.</h1>
+      <p class="subtitle animate-fade-up delay-2">Create a board where colleagues can share what someone truly meant to them — as a person, not just an employee.</p>
+      <div class="cta animate-fade-up delay-3">
+        <a href="#/create" class="btn btn-primary">Create a Board</a>
+      </div>
+    </header>
+
+    <section class="how-section">
+      <h2>How it works</h2>
+      <div class="steps">
+        <div class="step-card animate-fade-up delay-1">
+          <div class="step-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
+          </div>
+          <h3>Create a board for someone</h3>
+          <p>Start a farewell board in seconds — no account needed.</p>
+        </div>
+        <div class="step-card animate-fade-up delay-2">
+          <div class="step-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"/></svg>
+          </div>
+          <h3>Share the link with colleagues</h3>
+          <p>Send it via WhatsApp, personal email, or text — anywhere outside company systems.</p>
+        </div>
+        <div class="step-card animate-fade-up delay-3">
+          <div class="step-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+          </div>
+          <h3>They receive words that matter</h3>
+          <p>A keepsake page of heartfelt notes from the people they worked with.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="example-section">
+      <h2>A board is a keepsake</h2>
+      <p class="subtitle">Here's what it looks like when colleagues share what someone meant to them.</p>
+      <div class="example-grid">
+        <div class="example-card">
+          <div class="author">Sarah M.</div>
+          <div class="msg">"You always made Monday mornings bearable with your terrible jokes. The office won't be the same without you."</div>
+        </div>
+        <div class="example-card">
+          <div class="author">James K.</div>
+          <div class="msg">"Thank you for mentoring me when I first joined. I wouldn't be where I am today without your patience and kindness."</div>
+        </div>
+        <div class="example-card">
+          <div class="author">Priya R.</div>
+          <div class="msg">"Your calm during that product launch crisis taught me more about leadership than any book ever could."</div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>Built with ❤️ for the people who matter</p>
+      <a href="#/create" class="btn btn-primary" style="margin-top:12px;">Create a Board</a>
+    </footer>
+  </div>
+
+  <!-- ═══════════════ CREATE PAGE ═══════════════ -->
+  <div id="page-create" class="page">
+    <div class="create-page">
+      <div class="create-container animate-fade-up">
+        <a href="#/" class="back-link">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+          Back
+        </a>
+        <h1>Create a board</h1>
+        <p class="desc">Give someone a goodbye they'll never forget.</p>
+        <form id="create-form">
+          <div class="form-group">
+            <label for="recipient-name">Who is this board for?</label>
+            <input type="text" id="recipient-name" placeholder="e.g. Alex Chen" required autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label>Their photo (optional)</label>
+            <div class="photo-upload">
+              <div class="photo-preview" id="recipient-photo-preview">
+                <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+              </div>
+              <div>
+                <label class="photo-upload-btn" for="recipient-photo-input">
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg>
+                  Upload photo
+                </label>
+                <input type="file" id="recipient-photo-input" accept="image/*">
+                <p class="hint" style="margin-top:4px">A face makes it personal.</p>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="board-dedication">Your dedication <span style="color:var(--primary)">*</span></label>
+            <textarea id="board-dedication" placeholder="For Sarah, who made Monday mornings survivable" rows="3" required></textarea>
+            <p class="hint">This sets the emotional tone for the whole board.</p>
+          </div>
+          <div class="form-group">
+            <label for="creator-name">Your name (optional)</label>
+            <input type="text" id="creator-name" placeholder="e.g. Jordan" autocomplete="off">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; margin-top:8px;">Create Board</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ BOARD PAGE ═══════════════ -->
+  <div id="page-board" class="page">
+    <div class="board-page">
+      <div class="board-header">
+        <a href="#/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;font-size:0.9rem;color:#6b7280;text-decoration:none;margin-bottom:16px;">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+          Home
+        </a>
+        <div class="board-photo" id="board-photo" style="display:none;">
+          <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+        </div>
+        <h1 id="board-title"></h1>
+        <p id="board-dedication-display" style="font-family:'Playfair Display',Georgia,serif; font-size:1.15rem; font-style:italic; color:var(--primary); margin:8px auto 0; max-width:500px;"></p>
+        <p class="board-subtitle" id="board-note-display"></p>
+        <div class="board-actions">
+          <button class="btn btn-secondary btn-sm" onclick="openShareModal()">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"/></svg>
+            Share Link
+          </button>
+        </div>
+      </div>
+
+      <div class="board-body">
+        <div id="messages-container"></div>
+        <div id="recipient-response-container"></div>
+
+        <div id="add-msg-btn" style="display:flex; justify-content:center; margin-top:32px;">
+          <button class="btn btn-primary" onclick="expandMessageCard()">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Add your message
+          </button>
+        </div>
+
+        <div class="add-message-card" id="add-message-card" style="display:none; margin-top:32px;">
+          <div class="card-header">
+            <h3>Add your message</h3>
+            <button class="close-btn" onclick="collapseMessageCard()">&times;</button>
+          </div>
+          <form id="message-form">
+            <div class="form-group">
+              <label for="msg-author">Your name (optional)</label>
+              <input type="text" id="msg-author" placeholder="Your name" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label for="msg-text">Your message</label>
+              <textarea id="msg-text" placeholder="Share what this person meant to you..." rows="4" required></textarea>
+            </div>
+            <div class="photo-upload-sm" style="margin-bottom:16px;">
+              <div class="photo-preview-sm" id="msg-photo-preview">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#c0c0c0" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+              </div>
+              <label for="msg-photo-input">Add your photo (optional)</label>
+              <input type="file" id="msg-photo-input" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SHARE PAGE (initiator sees after creating) ═══════════════ -->
+  <div id="page-share" class="page">
+    <div style="max-width:520px; margin:0 auto; padding:48px 20px; text-align:center;">
+      <div style="font-size:3rem; margin-bottom:16px;">&#10084;&#65039;</div>
+      <h1 style="font-size:1.8rem; margin-bottom:8px;">Board created!</h1>
+      <p style="color:var(--text-muted); margin-bottom:32px;">Share the message below so others can add their kind words.</p>
+
+      <div style="background:var(--card); border-radius:var(--radius); padding:24px; box-shadow:var(--card-shadow); text-align:left; margin-bottom:24px;">
+        <label style="font-size:0.85rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:8px;">Ready-to-share message</label>
+        <textarea id="share-page-message" rows="4" style="width:100%; padding:12px; border:1px solid #e5e7eb; border-radius:12px; font-family:'Inter',sans-serif; font-size:0.95rem; resize:vertical; line-height:1.5;"></textarea>
+        <button class="btn btn-primary" style="width:100%; margin-top:12px;" onclick="copySharePageMessage()">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"/></svg>
+          Copy Message
+        </button>
+        <div class="copied-toast" id="share-page-copied" style="text-align:center; color:var(--primary); font-size:0.85rem; font-weight:600; margin-top:8px; opacity:0; transition:opacity 0.3s;">Copied to clipboard!</div>
+      </div>
+
+      <a id="share-page-view-btn" href="#" class="btn btn-outline" style="width:100%;">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+        View the board
+      </a>
+
+      <div style="background:var(--card); border-radius:var(--radius); padding:24px; box-shadow:var(--card-shadow); text-align:left; margin-top:24px;">
+        <label style="font-size:0.85rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:8px;">Your management link</label>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Use this link to manage the board, close it to new messages, and share it with <strong id="recipient-share-name"></strong> when you're ready.</p>
+        <div class="share-url" style="margin-bottom:12px;">
+          <input type="text" id="manage-link-input" readonly onclick="this.select()">
+        </div>
+        <button class="btn btn-outline" style="width:100%;" onclick="copyManageLink()">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"/></svg>
+          Copy Management Link
+        </button>
+        <div id="manage-link-copied" style="text-align:center; color:var(--primary); font-size:0.85rem; font-weight:600; margin-top:8px; opacity:0; transition:opacity 0.3s;">Copied to clipboard!</div>
+      </div>
+      <div class="manage-warning" style="margin-top:16px;">
+        <strong>Save this link!</strong> This is the only way to manage your board and share it with <span id="recipient-warn-name"></span> when you're ready. Bookmark it or save it somewhere safe — you won't be able to recover it.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ RESPOND PAGE (recipient sees) ═══════════════ -->
+  <div id="page-respond" class="page">
+    <div class="respond-page">
+      <div class="board-header">
+        <div class="board-photo" id="respond-photo" style="display:none;">
+          <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+        </div>
+        <h1 id="respond-title"></h1>
+        <p id="respond-dedication" style="font-family:'Playfair Display',Georgia,serif; font-size:1.15rem; font-style:italic; color:var(--primary); margin:8px auto 0; max-width:500px;"></p>
+      </div>
+
+      <div class="board-body">
+        <div id="respond-messages-container"></div>
+
+        <div id="respond-form-section"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ MANAGE PAGE (initiator management) ═══════════════ -->
+  <div id="page-manage" class="page">
+    <div class="manage-page" id="manage-content"></div>
+  </div>
+
+  <!-- ═══════════════ NOT FOUND ═══════════════ -->
+  <div id="page-404" class="page">
+    <div class="notfound-page">
+      <div>
+        <h1>Board not found</h1>
+        <p>This board doesn't exist or the link is incorrect.</p>
+        <a href="#/" class="btn btn-primary">Go Home</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SHARE MODAL ═══════════════ -->
+  <div id="share-modal" class="modal-overlay" onclick="if(event.target===this)closeShareModal()">
+    <div class="modal">
+      <h2>Share this board</h2>
+      <p>Copy the message below and send it to colleagues via WhatsApp, text, or personal email.</p>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label for="share-message" style="font-size:0.85rem;">Ready-to-share message</label>
+        <textarea id="share-message" rows="4" style="font-size:0.9rem;"></textarea>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-primary btn-sm" style="flex:1;" onclick="copyShareMessage()">Copy Message</button>
+      </div>
+      <div class="copied-toast" id="copied-toast">Copied to clipboard!</div>
+      <button class="btn btn-outline btn-sm" style="width:100%;margin-top:12px;" onclick="closeShareModal()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // ─── Firebase (lazy-loaded) ───
+    var db = null;
+    var _firebaseReady = null;
+
+    function loadFirebase() {
+      if (_firebaseReady) return _firebaseReady;
+      _firebaseReady = new Promise(function(resolve, reject) {
+        var s1 = document.createElement('script');
+        s1.src = 'https://www.gstatic.com/firebasejs/11.4.0/firebase-app-compat.js';
+        s1.onload = function() {
+          var s2 = document.createElement('script');
+          s2.src = 'https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore-compat.js';
+          s2.onload = function() {
+            firebase.initializeApp({
+              apiKey: "AIzaSyCDWzhZKP_MxiqQp6S1F537plG6xb_Go_E",
+              authDomain: "farewellboard.firebaseapp.com",
+              projectId: "farewellboard",
+              storageBucket: "farewellboard.firebasestorage.app",
+              messagingSenderId: "348214625685",
+              appId: "1:348214625685:web:f29cb7d7049d0169f8a29c"
+            });
+            db = firebase.firestore();
+            db.enablePersistence().catch(function() {});
+            resolve();
+          };
+          s2.onerror = reject;
+          document.head.appendChild(s2);
+        };
+        s1.onerror = reject;
+        document.head.appendChild(s1);
+      });
+      return _firebaseReady;
+    }
+
+    // Start loading Firebase in the background immediately
+    loadFirebase();
+
+    // ─── Data layer (Firestore) ───
+    function generateId() {
+      return Math.random().toString(36).substring(2, 10);
+    }
+
+    async function saveBoard(id, boardData) {
+      await loadFirebase();
+      await db.collection('boards').doc(id).set(boardData);
+    }
+
+    async function getBoard(id) {
+      await loadFirebase();
+      var doc = await db.collection('boards').doc(id).get();
+      if (doc.exists) return doc.data();
+      return null;
+    }
+
+    async function addMessageToBoard(boardId, message) {
+      await loadFirebase();
+      await db.collection('boards').doc(boardId).update({
+        messages: firebase.firestore.FieldValue.arrayUnion(message)
+      });
+    }
+
+    async function saveRecipientResponse(boardId, responseText) {
+      await loadFirebase();
+      await db.collection('boards').doc(boardId).update({
+        recipientResponse: responseText,
+        recipientRespondedAt: new Date().toISOString()
+      });
+    }
+
+    async function toggleBoardClosed(boardId, isClosed) {
+      await loadFirebase();
+      await db.collection('boards').doc(boardId).update({ isClosed: isClosed });
+    }
+
+    // ─── Router ───
+    function navigate(hash) {
+      window.location.hash = hash;
+    }
+
+    function getRoute() {
+      const hash = window.location.hash.slice(1) || '/';
+      if (hash === '/' || hash === '') return { page: 'home' };
+      if (hash === '/create') return { page: 'create' };
+      const manageMatch = hash.match(/^\/board\/([a-z0-9-]+)\/manage\/([a-z0-9-]+)$/i);
+      if (manageMatch) return { page: 'manage', id: manageMatch[1], token: manageMatch[2] };
+      const respondMatch = hash.match(/^\/board\/([a-z0-9]+)\/respond$/);
+      if (respondMatch) return { page: 'respond', id: respondMatch[1] };
+      const shareMatch = hash.match(/^\/share\/([a-z0-9]+)\/([a-z0-9-]+)$/i);
+      if (shareMatch) return { page: 'share', id: shareMatch[1], token: shareMatch[2] };
+      const boardMatch = hash.match(/^\/board\/([a-z0-9]+)$/);
+      if (boardMatch) return { page: 'board', id: boardMatch[1] };
+      return { page: '404' };
+    }
+
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const el = document.getElementById('page-' + pageId);
+      if (el) el.classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    async function router() {
+      const route = getRoute();
+      if (route.page === 'board') {
+        await renderBoard(route.id);
+      } else if (route.page === 'respond') {
+        await renderRespondPage(route.id);
+      } else if (route.page === 'share') {
+        await renderSharePage(route.id, route.token);
+      } else if (route.page === 'manage') {
+        await renderManagePage(route.id, route.token);
+      } else {
+        showPage(route.page);
+      }
+    }
+
+    window.addEventListener('hashchange', router);
+    window.addEventListener('DOMContentLoaded', router);
+
+    // ─── Photo helpers ───
+    var recipientPhotoData = null;
+    var msgPhotoData = null;
+
+    function handlePhotoInput(inputId, previewId, callback) {
+      document.getElementById(inputId).addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          // Resize to save localStorage space
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var max = 200;
+            var w = img.width, h = img.height;
+            if (w > h) { if (w > max) { h = h * max / w; w = max; } }
+            else { if (h > max) { w = w * max / h; h = max; } }
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            var dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            var prev = document.getElementById(previewId);
+            prev.innerHTML = '<img src="' + dataUrl + '" alt="Photo">';
+            prev.classList.add('has-photo');
+            callback(dataUrl);
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    handlePhotoInput('recipient-photo-input', 'recipient-photo-preview', function(d) { recipientPhotoData = d; });
+    handlePhotoInput('msg-photo-input', 'msg-photo-preview', function(d) { msgPhotoData = d; });
+
+    // ─── Create board ───
+    document.getElementById('create-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('recipient-name').value.trim();
+      const dedication = document.getElementById('board-dedication').value.trim();
+      const creator = document.getElementById('creator-name').value.trim();
+      if (!name || !dedication) return;
+
+      const id = generateId();
+      const manageToken = (crypto.randomUUID ? crypto.randomUUID() : generateId() + generateId() + generateId());
+      const boardData = {
+        recipientName: name,
+        recipientPhoto: recipientPhotoData || null,
+        dedication: dedication,
+        creatorName: creator,
+        createdAt: new Date().toISOString(),
+        messages: [],
+        manageToken: manageToken,
+        isClosed: false
+      };
+
+      try {
+        await saveBoard(id, boardData);
+      } catch (err) {
+        console.error('Failed to save board:', err);
+        alert('Could not create board. Please try again.');
+        return;
+      }
+
+      // Reset form and photo state
+      this.reset();
+      recipientPhotoData = null;
+      var prev = document.getElementById('recipient-photo-preview');
+      prev.innerHTML = '<svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>';
+      prev.classList.remove('has-photo');
+
+      navigate('#/share/' + id + '/' + manageToken);
+    });
+
+    // ─── Render board ───
+    var currentBoardCache = null;
+    var currentBoardId = null;
+
+    async function renderBoard(id) {
+      showPage('board');
+
+      // Show a loading state while fetching
+      document.getElementById('board-title').textContent = 'Loading\u2026';
+      document.getElementById('board-dedication-display').style.display = 'none';
+      document.getElementById('board-photo').style.display = 'none';
+      document.getElementById('add-msg-btn').style.display = 'none';
+      document.getElementById('add-message-card').style.display = 'none';
+      document.getElementById('messages-container').innerHTML =
+        '<div style="text-align:center; padding:40px 0; color:var(--text-muted);">' +
+          '<div style="width:32px; height:32px; border:3px solid #e5e7eb; border-top-color:var(--primary); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 12px;"></div>' +
+          'Loading board\u2026' +
+        '</div>';
+
+      try {
+        var board = await getBoard(id);
+      } catch (err) {
+        console.error('Failed to load board:', err);
+        showPage('404');
+        return;
+      }
+
+      if (!board) {
+        showPage('404');
+        return;
+      }
+
+      currentBoardCache = board;
+      currentBoardId = id;
+
+      var photoEl = document.getElementById('board-photo');
+      if (board.recipientPhoto) {
+        photoEl.innerHTML = '<img src="' + board.recipientPhoto + '" alt="Photo">';
+        photoEl.style.display = 'flex';
+      } else {
+        photoEl.style.display = 'none';
+      }
+
+      document.getElementById('board-title').textContent =
+        'Kind words for ' + board.recipientName;
+
+      const dedEl = document.getElementById('board-dedication-display');
+      if (board.dedication) {
+        dedEl.textContent = '"' + board.dedication + '"';
+        dedEl.style.display = 'block';
+      } else {
+        dedEl.style.display = 'none';
+      }
+
+      const noteEl = document.getElementById('board-note-display');
+      if (board.note) {
+        noteEl.textContent = board.note;
+        noteEl.style.display = 'block';
+      } else {
+        noteEl.style.display = 'none';
+      }
+
+      renderMessages(board.messages);
+
+      // Show recipient response if present
+      var responseContainer = document.getElementById('recipient-response-container');
+      if (board.recipientResponse) {
+        var respondedTime = new Date(board.recipientRespondedAt).toLocaleDateString('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric'
+        });
+        responseContainer.innerHTML =
+          '<div class="recipient-response">' +
+            '<div class="response-header">From ' + escapeHtml(board.recipientName) + '</div>' +
+            '<div class="response-text">' + escapeHtml(board.recipientResponse) + '</div>' +
+            '<div class="response-time">' + respondedTime + '</div>' +
+          '</div>';
+      } else {
+        responseContainer.innerHTML = '';
+      }
+
+      // Show/hide add message based on isClosed status
+      var addBtnContainer = document.getElementById('add-msg-btn');
+      var closedNoteEl = document.getElementById('board-closed-note');
+      if (!closedNoteEl) {
+        closedNoteEl = document.createElement('div');
+        closedNoteEl.id = 'board-closed-note';
+        closedNoteEl.className = 'board-closed-note';
+        closedNoteEl.textContent = 'This board is no longer accepting new messages.';
+        addBtnContainer.parentNode.insertBefore(closedNoteEl, addBtnContainer.nextSibling);
+      }
+
+      if (board.isClosed) {
+        addBtnContainer.style.display = 'none';
+        closedNoteEl.style.display = 'block';
+      } else {
+        addBtnContainer.style.display = 'flex';
+        closedNoteEl.style.display = 'none';
+      }
+
+      // Show "I created this board" footer link
+      var creatorLinkEl = document.getElementById('board-creator-link');
+      if (!creatorLinkEl) {
+        creatorLinkEl = document.createElement('a');
+        creatorLinkEl.id = 'board-creator-link';
+        creatorLinkEl.className = 'creator-link';
+        creatorLinkEl.href = 'javascript:void(0)';
+        creatorLinkEl.textContent = 'I created this board';
+        creatorLinkEl.title = 'Use your management link to manage this board';
+        creatorLinkEl.addEventListener('click', function() {
+          var tip = document.getElementById('creator-tip');
+          if (tip) { tip.remove(); return; }
+          tip = document.createElement('div');
+          tip.id = 'creator-tip';
+          tip.style.cssText = 'text-align:center; padding:12px 20px; background:#f9fafb; border-radius:12px; margin-top:8px; font-size:0.85rem; color:var(--text-muted);';
+          tip.textContent = 'Use the management link you received when you created this board. It lets you manage the board and share it with the recipient.';
+          creatorLinkEl.parentNode.insertBefore(tip, creatorLinkEl.nextSibling);
+        });
+        document.querySelector('.board-body').appendChild(creatorLinkEl);
+      }
+    }
+
+    // ─── Share page (shown to initiator after creating) ───
+    async function renderSharePage(id, token) {
+      showPage('share');
+
+      try {
+        var board = await getBoard(id);
+      } catch (err) {
+        console.error('Failed to load board:', err);
+        showPage('404');
+        return;
+      }
+
+      if (!board) {
+        showPage('404');
+        return;
+      }
+
+      var boardUrl = window.location.origin + window.location.pathname + '#/board/' + id;
+      var msg = 'Hey \u2014 I\u2019m collecting messages for ' + board.recipientName + '. If you\u2019d like to share what they meant to you, add yours here: ' + boardUrl;
+      document.getElementById('share-page-message').value = msg;
+      document.getElementById('share-page-view-btn').href = '#/board/' + id;
+
+      // Management link section
+      var manageUrl = window.location.origin + window.location.pathname + '#/board/' + id + '/manage/' + token;
+      document.getElementById('manage-link-input').value = manageUrl;
+      document.getElementById('recipient-share-name').textContent = board.recipientName;
+      document.getElementById('recipient-warn-name').textContent = board.recipientName;
+    }
+
+    function copySharePageMessage() {
+      var textarea = document.getElementById('share-page-message');
+      navigator.clipboard.writeText(textarea.value).then(function() {
+        var toast = document.getElementById('share-page-copied');
+        toast.style.opacity = '1';
+        setTimeout(function() { toast.style.opacity = '0'; }, 2000);
+      });
+    }
+
+    function copyManageLink() {
+      var input = document.getElementById('manage-link-input');
+      navigator.clipboard.writeText(input.value).then(function() {
+        var toast = document.getElementById('manage-link-copied');
+        toast.style.opacity = '1';
+        setTimeout(function() { toast.style.opacity = '0'; }, 2000);
+      });
+    }
+
+    // ─── Manage page (initiator manages the board) ───
+    async function renderManagePage(id, token) {
+      showPage('manage');
+      var container = document.getElementById('manage-content');
+      container.innerHTML = '<div style="text-align:center; padding:80px 0; color:var(--text-muted);"><div class="spinner"></div>Loading...</div>';
+
+      try {
+        var board = await getBoard(id);
+      } catch (err) {
+        console.error('Failed to load board:', err);
+        container.innerHTML =
+          '<div class="manage-invalid"><h2>Something went wrong</h2><p>Could not load this board.</p><a href="#/" class="btn btn-primary">Go Home</a></div>';
+        return;
+      }
+
+      if (!board) {
+        container.innerHTML =
+          '<div class="manage-invalid"><h2>Board not found</h2><p>This board doesn\'t exist or the link is incorrect.</p><a href="#/" class="btn btn-primary">Go Home</a></div>';
+        return;
+      }
+
+      if (board.manageToken !== token) {
+        container.innerHTML =
+          '<div class="manage-invalid"><h2>This link isn\'t valid</h2><p>The management token doesn\'t match. Make sure you\'re using the correct link.</p><a href="#/" class="btn btn-primary">Go Home</a></div>';
+        return;
+      }
+
+      var messageCount = (board.messages && board.messages.length) || 0;
+      var isClosed = !!board.isClosed;
+      var photoHtml = board.recipientPhoto
+        ? '<img src="' + board.recipientPhoto + '" alt="Photo">'
+        : '<svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#c0c0c0" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>';
+
+      var respondUrl = window.location.origin + window.location.pathname + '#/board/' + id + '/respond';
+      var recipientMsg = 'Hey ' + board.recipientName + ', some of us put something together for you. We wanted you to know what you meant to us: ' + respondUrl;
+
+      container.innerHTML =
+        '<a href="#/" style="display:inline-flex;align-items:center;gap:6px;font-size:0.9rem;color:var(--text-muted);text-decoration:none;margin-bottom:24px;">' +
+          '<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>' +
+          'Home' +
+        '</a>' +
+        '<h1>Manage Board</h1>' +
+        '<p class="manage-subtitle">For ' + escapeHtml(board.recipientName) + '</p>' +
+
+        // Board status card
+        '<div class="manage-card">' +
+          '<h3>Board Status</h3>' +
+          '<div class="manage-status">' +
+            '<div class="manage-photo">' + photoHtml + '</div>' +
+            '<div class="manage-info">' +
+              '<div class="name">' + escapeHtml(board.recipientName) + '</div>' +
+              '<div class="meta">' + messageCount + ' message' + (messageCount !== 1 ? 's' : '') + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<a href="#/board/' + id + '" class="btn btn-outline btn-sm" style="width:100%;">' +
+            '<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>' +
+            'View the Board' +
+          '</a>' +
+        '</div>' +
+
+        // Recipient link card
+        '<div class="manage-card">' +
+          '<h3>Share with ' + escapeHtml(board.recipientName) + '</h3>' +
+          '<p>When you\'re ready, send this message via personal channels (text, WhatsApp, personal email). It lets them see all the kind words and write a response.</p>' +
+          '<textarea id="manage-recipient-msg" rows="3" style="width:100%; padding:12px; border:1px solid #e5e7eb; border-radius:12px; font-family:\'Inter\',sans-serif; font-size:0.95rem; resize:vertical; line-height:1.5;">' + escapeHtml(recipientMsg) + '</textarea>' +
+          '<button class="btn btn-primary" style="width:100%; margin-top:12px;" onclick="copyManageRecipientMsg()">' +
+            '<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"/></svg>' +
+            'Copy Message for ' + escapeHtml(board.recipientName) +
+          '</button>' +
+          '<div id="manage-recipient-copied" style="text-align:center; color:var(--primary); font-size:0.85rem; font-weight:600; margin-top:8px; opacity:0; transition:opacity 0.3s;">Copied to clipboard!</div>' +
+        '</div>' +
+
+        // Board controls card
+        '<div class="manage-card">' +
+          '<h3>Board Controls</h3>' +
+          '<div class="toggle-row">' +
+            '<div>' +
+              '<div class="toggle-label">Close board to new messages</div>' +
+              '<div class="toggle-desc">When closed, no one can add new messages.</div>' +
+            '</div>' +
+            '<label class="toggle-switch">' +
+              '<input type="checkbox" id="manage-close-toggle" ' + (isClosed ? 'checked' : '') + '>' +
+              '<span class="slider"></span>' +
+            '</label>' +
+          '</div>' +
+        '</div>';
+
+      // Bind toggle handler
+      document.getElementById('manage-close-toggle').addEventListener('change', async function() {
+        var checked = this.checked;
+        this.disabled = true;
+        try {
+          await toggleBoardClosed(id, checked);
+        } catch (err) {
+          console.error('Failed to toggle board:', err);
+          this.checked = !checked;
+          alert('Could not update board. Please try again.');
+        }
+        this.disabled = false;
+      });
+    }
+
+    function copyManageRecipientMsg() {
+      var textarea = document.getElementById('manage-recipient-msg');
+      navigator.clipboard.writeText(textarea.value).then(function() {
+        var toast = document.getElementById('manage-recipient-copied');
+        toast.style.opacity = '1';
+        setTimeout(function() { toast.style.opacity = '0'; }, 2000);
+      });
+    }
+
+    // ─── Respond page (recipient sees board + can respond) ───
+    async function renderRespondPage(id) {
+      showPage('respond');
+
+      document.getElementById('respond-title').textContent = 'Loading\u2026';
+      document.getElementById('respond-dedication').style.display = 'none';
+      document.getElementById('respond-photo').style.display = 'none';
+      document.getElementById('respond-messages-container').innerHTML =
+        '<div style="text-align:center; padding:40px 0; color:var(--text-muted);">' +
+          '<div style="width:32px; height:32px; border:3px solid #e5e7eb; border-top-color:var(--primary); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 12px;"></div>' +
+          'Loading board\u2026' +
+        '</div>';
+      document.getElementById('respond-form-section').innerHTML = '';
+
+      try {
+        var board = await getBoard(id);
+      } catch (err) {
+        console.error('Failed to load board:', err);
+        showPage('404');
+        return;
+      }
+
+      if (!board) {
+        showPage('404');
+        return;
+      }
+
+      currentBoardCache = board;
+      currentBoardId = id;
+
+      // Render header
+      var photoEl = document.getElementById('respond-photo');
+      if (board.recipientPhoto) {
+        photoEl.innerHTML = '<img src="' + board.recipientPhoto + '" alt="Photo">';
+        photoEl.style.display = 'flex';
+      } else {
+        photoEl.style.display = 'none';
+      }
+
+      document.getElementById('respond-title').textContent = 'Kind words for ' + board.recipientName;
+
+      var dedEl = document.getElementById('respond-dedication');
+      if (board.dedication) {
+        dedEl.textContent = '\u201c' + board.dedication + '\u201d';
+        dedEl.style.display = 'block';
+      } else {
+        dedEl.style.display = 'none';
+      }
+
+      // Render messages
+      renderMessagesInto('respond-messages-container', board.messages);
+
+      // Render response section
+      var formSection = document.getElementById('respond-form-section');
+      if (board.recipientResponse) {
+        var respondedTime = new Date(board.recipientRespondedAt).toLocaleDateString('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric'
+        });
+        formSection.innerHTML =
+          '<div class="respond-existing">' +
+            '<h3 style="font-family:\'Playfair Display\',serif; font-size:1.15rem; margin-bottom:4px;">Your response</h3>' +
+            '<div class="response-text">' + escapeHtml(board.recipientResponse) + '</div>' +
+            '<div class="response-time">' + respondedTime + '</div>' +
+            '<button class="btn btn-outline btn-sm" onclick="showRespondEditForm()">Edit your response</button>' +
+          '</div>';
+      } else {
+        showRespondForm(board.recipientName);
+      }
+    }
+
+    function showRespondForm(recipientName) {
+      var formSection = document.getElementById('respond-form-section');
+      var existingText = (currentBoardCache && currentBoardCache.recipientResponse) || '';
+      formSection.innerHTML =
+        '<div class="respond-invitation">' +
+          '<h3>Want to say something back?</h3>' +
+          '<p>Let everyone know what their words meant to you.</p>' +
+          '<form id="respond-form">' +
+            '<div class="form-group" style="text-align:left;">' +
+              '<label for="respond-text">Your response</label>' +
+              '<textarea id="respond-text" placeholder="To everyone who took the time to write\u2026" rows="5" required>' + escapeHtml(existingText) + '</textarea>' +
+            '</div>' +
+            '<button type="submit" class="btn btn-primary" style="width:100%;">Post Your Response</button>' +
+          '</form>' +
+        '</div>';
+
+      document.getElementById('respond-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        var text = document.getElementById('respond-text').value.trim();
+        if (!text) return;
+
+        var btn = this.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = 'Saving\u2026';
+
+        try {
+          await saveRecipientResponse(currentBoardId, text);
+          currentBoardCache.recipientResponse = text;
+          currentBoardCache.recipientRespondedAt = new Date().toISOString();
+          navigate('#/board/' + currentBoardId);
+        } catch (err) {
+          console.error('Failed to save response:', err);
+          alert('Could not save your response. Please try again.');
+          btn.disabled = false;
+          btn.textContent = 'Post Your Response';
+        }
+      });
+    }
+
+    function showRespondEditForm() {
+      showRespondForm(currentBoardCache ? currentBoardCache.recipientName : '');
+      document.getElementById('respond-form-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function renderMessagesInto(containerId, messages) {
+      var container = document.getElementById(containerId);
+      if (!messages || messages.length === 0) {
+        container.innerHTML =
+          '<div class="empty-state">' +
+            '<div class="empty-heart">&#10084;&#65039;</div>' +
+            '<p>No messages yet.</p>' +
+          '</div>';
+        return;
+      }
+
+      var html = '<div class="messages-grid">';
+      var sorted = messages.slice().reverse();
+      sorted.forEach(function(m) {
+        var initials = m.author.split(' ').map(function(w){ return w[0]; }).join('').toUpperCase().slice(0, 2);
+        var time = new Date(m.timestamp).toLocaleDateString('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric'
+        });
+        var avatarContent = m.photo
+          ? '<img src="' + m.photo + '" alt="' + escapeHtml(m.author) + '">'
+          : initials;
+        html +=
+          '<div class="message-card">' +
+            '<div class="card-author">' +
+              '<span class="avatar">' + avatarContent + '</span>' +
+              '<span>' + escapeHtml(m.author) + '</span>' +
+            '</div>' +
+            '<div class="card-msg">' + escapeHtml(m.text) + '</div>' +
+            '<div class="card-time">' + time + '</div>' +
+          '</div>';
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    function renderMessages(messages) {
+      const container = document.getElementById('messages-container');
+      if (!messages || messages.length === 0) {
+        container.innerHTML =
+          '<div class="empty-state">' +
+            '<div class="empty-heart">&#10084;&#65039;</div>' +
+            '<p>No messages yet. Be the first to share some kind words!</p>' +
+          '</div>';
+        return;
+      }
+
+      let html = '<div class="messages-grid">';
+      // Show newest first
+      const sorted = [...messages].reverse();
+      sorted.forEach(function(m) {
+        const initials = m.author.split(' ').map(function(w){ return w[0]; }).join('').toUpperCase().slice(0, 2);
+        const time = new Date(m.timestamp).toLocaleDateString('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric'
+        });
+        var avatarContent = m.photo
+          ? '<img src="' + m.photo + '" alt="' + escapeHtml(m.author) + '">'
+          : initials;
+        html +=
+          '<div class="message-card">' +
+            '<div class="card-author">' +
+              '<span class="avatar">' + avatarContent + '</span>' +
+              '<span>' + escapeHtml(m.author) + '</span>' +
+            '</div>' +
+            '<div class="card-msg">' + escapeHtml(m.text) + '</div>' +
+            '<div class="card-time">' + time + '</div>' +
+          '</div>';
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    // ─── Message submit ───
+    document.getElementById('message-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var route = getRoute();
+      if (route.page !== 'board') return;
+
+      var author = document.getElementById('msg-author').value.trim() || 'Anonymous';
+      var text = document.getElementById('msg-text').value.trim();
+      if (!text) return;
+
+      submitMessage(route.id, author, text, msgPhotoData);
+
+      // Reset form and collapse back to button
+      document.getElementById('msg-text').value = '';
+      document.getElementById('msg-author').value = '';
+      document.getElementById('msg-photo-input').value = '';
+      msgPhotoData = null;
+      resetPhotoPreview('msg-photo-preview');
+      collapseMessageCard();
+
+      // Scroll to top of messages so user sees their new message
+      document.getElementById('messages-container').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // ─── Shared submit helper ───
+    async function submitMessage(boardId, author, text, photo) {
+      var message = {
+        author: author,
+        photo: photo || null,
+        text: text,
+        timestamp: new Date().toISOString()
+      };
+
+      try {
+        await addMessageToBoard(boardId, message);
+      } catch (err) {
+        console.error('Failed to save message:', err);
+        alert('Could not save your message. Please try again.');
+        return;
+      }
+
+      // Update local cache and re-render
+      if (currentBoardCache) {
+        currentBoardCache.messages.push(message);
+      }
+      renderMessages(currentBoardCache ? currentBoardCache.messages : [message]);
+    }
+
+    function collapseMessageCard() {
+      document.getElementById('add-message-card').style.display = 'none';
+      document.getElementById('add-msg-btn').style.display = 'flex';
+    }
+    function expandMessageCard() {
+      document.getElementById('add-msg-btn').style.display = 'none';
+      document.getElementById('add-message-card').style.display = 'block';
+      document.getElementById('add-message-card').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetPhotoPreview(previewId) {
+      var el = document.getElementById(previewId);
+      el.innerHTML = '<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#c0c0c0" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>';
+      el.classList.remove('has-photo');
+    }
+
+    // ─── Share modal ───
+    function openShareModal() {
+      var name = currentBoardCache ? currentBoardCache.recipientName : 'someone';
+      var url = window.location.href;
+      var msg = 'Hey \u2014 I\u2019m collecting messages for ' + name + '. If you\u2019d like to share what they meant to you, add yours here: ' + url;
+      document.getElementById('share-message').value = msg;
+      document.getElementById('share-modal').classList.add('active');
+      document.getElementById('copied-toast').classList.remove('show');
+    }
+    function closeShareModal() {
+      document.getElementById('share-modal').classList.remove('active');
+    }
+    function copyShareMessage() {
+      var textarea = document.getElementById('share-message');
+      navigator.clipboard.writeText(textarea.value).then(function() {
+        document.getElementById('copied-toast').classList.add('show');
+        setTimeout(function() {
+          document.getElementById('copied-toast').classList.remove('show');
+        }, 2000);
+      });
+    }
+
+    // ─── Helpers ───
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

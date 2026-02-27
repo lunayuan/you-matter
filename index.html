@@ -1,18 +1,1181 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>You Matter — Farewell Appreciation Board</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You Matter — Kind Words Board</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blush: #fde8e8;
+      --cream: #fdf6ee;
+      --primary: #e05a7a;
+      --primary-light: #f2849a;
+      --primary-dark: #c44868;
+      --text: #2d2d2d;
+      --text-muted: #6b7280;
+      --bg: #fffbf7;
+      --card: #ffffff;
+      --card-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      --radius: 16px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3 { font-family: 'Playfair Display', Georgia, serif; }
+
+    .page { display: none; min-height: 100vh; }
+    .page.active { display: block; }
+
+    /* ─── Buttons ─── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 32px; border-radius: 999px; border: none;
+      font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 600;
+      cursor: pointer; transition: all 0.25s ease; text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--primary); color: #fff;
+      box-shadow: 0 4px 16px rgba(224,90,122,0.25);
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      box-shadow: 0 6px 24px rgba(224,90,122,0.35);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: var(--blush); color: var(--primary);
+    }
+    .btn-secondary:hover { background: #fcdada; }
+    .btn-outline {
+      background: transparent; color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    .btn-outline:hover { background: var(--blush); }
+    .btn-sm { padding: 10px 20px; font-size: 0.9rem; }
+
+    /* ─── Inputs ─── */
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block; margin-bottom: 6px;
+      font-weight: 500; font-size: 0.9rem; color: var(--text);
+    }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb;
+      border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 1rem;
+      background: #fff; color: var(--text); transition: border-color 0.2s;
+      outline: none;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--primary-light);
+    }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-group .hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* ─── Animations ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .animate-fade-up {
+      animation: fadeUp 0.6s ease-out forwards;
+      opacity: 0;
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.8s ease-out forwards;
+      opacity: 0;
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.25s; }
+    .delay-3 { animation-delay: 0.4s; }
+    .delay-4 { animation-delay: 0.55s; }
+
+    /* ═══════════════════════════════════════
+       HOME PAGE
+       ═══════════════════════════════════════ */
+    .hero {
+      position: relative; overflow: hidden;
+      text-align: center; padding: 80px 24px 64px;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, var(--blush) 0%, var(--bg) 100%);
+      z-index: 0;
+    }
+    .hero > * { position: relative; z-index: 1; }
+    .hero .badge {
+      display: inline-block; font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--primary); margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 600; line-height: 1.15;
+      max-width: 680px; margin: 0 auto;
+    }
+    .hero .subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--text-muted); max-width: 540px;
+      margin: 20px auto 0; line-height: 1.6;
+    }
+    .hero .cta { margin-top: 36px; }
+
+    /* How it works */
+    .how-section { padding: 80px 24px; max-width: 960px; margin: 0 auto; }
+    .how-section h2 { text-align: center; font-size: 2rem; margin-bottom: 48px; }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 28px; }
+    .step-card {
+      background: var(--card); border-radius: var(--radius); padding: 32px 24px;
+      text-align: center; box-shadow: var(--card-shadow);
+    }
+    .step-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--blush); display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .step-icon svg { width: 24px; height: 24px; color: var(--primary); }
+    .step-card h3 { font-size: 1.1rem; margin-bottom: 8px; font-family: 'Playfair Display', serif; }
+    .step-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* Example board */
+    .example-section {
+      background: var(--cream); padding: 80px 24px;
+    }
+    .example-section h2 { text-align: center; font-size: 2rem; }
+    .example-section .subtitle {
+      text-align: center; color: var(--text-muted);
+      max-width: 480px; margin: 12px auto 48px;
+    }
+    .example-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px; max-width: 800px; margin: 0 auto;
+    }
+    .example-card {
+      background: var(--card); border-radius: var(--radius); padding: 24px;
+      box-shadow: var(--card-shadow);
+    }
+    .example-card .author {
+      font-weight: 600; font-size: 0.95rem; margin-bottom: 8px;
+    }
+    .example-card .msg {
+      font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;
+      font-style: italic;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 48px 24px; text-align: center;
+    }
+    .footer p { font-size: 0.9rem; color: var(--text-muted); }
+    .footer a {
+      display: inline-block; margin-top: 8px;
+      font-size: 0.9rem; font-weight: 600;
+      color: var(--primary); text-decoration: none;
+    }
+    .footer a:hover { text-decoration: underline; }
+
+    /* ═══════════════════════════════════════
+       CREATE PAGE
+       ═══════════════════════════════════════ */
+    .create-page {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 40px 24px;
+      background: linear-gradient(180deg, var(--blush) 0%, var(--bg) 40%);
+    }
+    .create-container {
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      padding: 48px 40px; width: 100%; max-width: 520px;
+    }
+    .create-container .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.9rem; color: var(--text-muted);
+      text-decoration: none; margin-bottom: 24px;
+    }
+    .create-container .back-link:hover { color: var(--primary); }
+    .create-container h1 {
+      font-size: 1.75rem; margin-bottom: 8px;
+    }
+    .create-container .desc {
+      color: var(--text-muted); margin-bottom: 32px; font-size: 0.95rem;
+    }
+
+    /* ═══════════════════════════════════════
+       BOARD PAGE
+       ═══════════════════════════════════════ */
+    .board-page {
+      min-height: 100vh;
+      background: linear-gradient(180deg, var(--blush) 0%, var(--bg) 30%);
+    }
+    .board-header {
+      text-align: center; padding: 48px 24px 32px;
+    }
+    .board-header h1 {
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      margin-bottom: 8px;
+    }
+    .board-header .board-subtitle {
+      color: var(--text-muted); font-size: 1.05rem;
+      max-width: 500px; margin: 0 auto;
+    }
+    .board-actions {
+      display: flex; gap: 12px; justify-content: center;
+      margin-top: 24px; flex-wrap: wrap;
+    }
+
+    .board-body { max-width: 880px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* Add message form */
+    .add-message-card {
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: var(--card-shadow); padding: 32px;
+      margin-bottom: 40px;
+    }
+    .add-message-card h3 {
+      font-size: 1.2rem; margin-bottom: 0;
+      font-family: 'Playfair Display', serif;
+    }
+    .add-message-card .card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px;
+    }
+    .add-message-card .close-btn {
+      width: 32px; height: 32px; border: none; background: none;
+      cursor: pointer; color: var(--text-muted); font-size: 1.3rem;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px; transition: background 0.2s;
+    }
+    .add-message-card .close-btn:hover { background: #f3f4f6; }
+
+    /* Option cards */
+    .msg-options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .msg-option {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 1.25rem; border-radius: 12px;
+      border: 1.5px solid rgba(224, 90, 122, 0.2);
+      background: #fff; cursor: pointer; transition: all 0.2s;
+    }
+    .msg-option:hover {
+      border-color: rgba(224, 90, 122, 0.45);
+      box-shadow: 0 2px 8px rgba(224, 90, 122, 0.08);
+      transform: translateY(-1px);
+    }
+    .msg-option .opt-icon {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; background: var(--blush);
+    }
+    .msg-option .opt-icon svg { width: 20px; height: 20px; }
+    .msg-option .opt-text h4 {
+      font-family: 'Inter', sans-serif; font-size: 0.95rem;
+      font-weight: 600; margin-bottom: 2px;
+    }
+    .msg-option .opt-text p {
+      font-size: 0.8rem; color: var(--text-muted); margin: 0;
+    }
+
+    /* Message form steps */
+    .msg-step { display: none; }
+    .msg-step.active { display: block; }
+
+    .inline-form {
+      display: grid; grid-template-columns: 1fr 2fr auto;
+      gap: 12px; align-items: end;
+    }
+    @media (max-width: 640px) {
+      .inline-form { grid-template-columns: 1fr; }
+    }
+
+    /* Guided prompts */
+    .prompt-step { margin-bottom: 20px; }
+    .prompt-step label {
+      display: block; font-weight: 600; font-size: 1rem;
+      margin-bottom: 10px; color: var(--text);
+      font-family: 'Inter', sans-serif;
+    }
+    .prompt-step textarea {
+      border: 2px solid var(--primary) !important;
+      min-height: 120px;
+    }
+    .prompt-nav {
+      display: flex; gap: 10px; align-items: center; margin-top: 16px;
+    }
+    .prompt-nav .btn-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 20px; border-radius: 999px;
+      border: 1.5px solid #e5e7eb; background: #fff;
+      font-family: 'Inter', sans-serif; font-size: 0.9rem;
+      font-weight: 500; color: var(--text-muted);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .prompt-nav .btn-back:hover { border-color: #ccc; color: var(--text); }
+    .prompt-nav .btn-next {
+      flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 12px 24px; border-radius: 999px; border: none;
+      background: var(--primary); color: #fff;
+      font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(224,90,122,0.25);
+    }
+    .prompt-nav .btn-next:hover {
+      background: var(--primary-dark);
+      box-shadow: 0 6px 24px rgba(224,90,122,0.35);
+    }
+    .prompt-nav .btn-next svg, .prompt-nav .btn-back svg {
+      width: 16px; height: 16px;
+    }
+
+    /* Segmented progress bar */
+    .guided-progress-bar {
+      display: flex; gap: 4px; margin-bottom: 1.25rem;
+    }
+    .guided-progress-bar .seg {
+      flex: 1; height: 6px; border-radius: 3px;
+      background: #e5e7eb; transition: background 0.3s;
+    }
+    .guided-progress-bar .seg.filled {
+      background: var(--primary);
+    }
+
+    /* Preview note */
+    .preview-note {
+      font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;
+      font-style: italic;
+    }
+
+    /* Messages grid */
+    .messages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .message-card {
+      background: var(--card); border-radius: var(--radius);
+      padding: 24px; box-shadow: var(--card-shadow);
+      animation: fadeUp 0.4s ease-out forwards;
+      transition: transform 0.2s;
+    }
+    .message-card:hover { transform: translateY(-2px); }
+    .message-card .card-author {
+      font-weight: 600; font-size: 0.95rem; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .message-card .card-author .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--blush); display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.8rem; color: var(--primary);
+      flex-shrink: 0; overflow: hidden;
+    }
+    .message-card .card-author .avatar img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+
+    /* Photo upload */
+    .photo-upload {
+      display: flex; align-items: center; gap: 16px;
+    }
+    .photo-preview {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--blush); display: flex; align-items: center; justify-content: center;
+      overflow: hidden; flex-shrink: 0; border: 2px dashed #e5e7eb;
+      transition: border-color 0.2s;
+    }
+    .photo-preview.has-photo { border-style: solid; border-color: var(--primary-light); }
+    .photo-preview img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .photo-preview svg { color: #c0c0c0; }
+    .photo-upload-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 8px; border: 1px solid #e5e7eb;
+      background: #fff; font-family: 'Inter', sans-serif; font-size: 0.85rem;
+      color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+    }
+    .photo-upload-btn:hover { border-color: var(--primary-light); color: var(--primary); }
+    .photo-upload input[type="file"] { display: none; }
+
+    /* Board recipient photo */
+    .board-photo {
+      width: 96px; height: 96px; border-radius: 50%;
+      background: var(--blush); display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px; overflow: hidden;
+      border: 3px solid #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    .board-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .board-photo svg { color: #d0d0d0; }
+
+    /* Small photo in message form */
+    .photo-upload-sm { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+    .photo-preview-sm {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--blush); display: flex; align-items: center; justify-content: center;
+      overflow: hidden; flex-shrink: 0; border: 1.5px dashed #e5e7eb;
+    }
+    .photo-preview-sm.has-photo { border-style: solid; border-color: var(--primary-light); }
+    .photo-preview-sm img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-upload-sm label {
+      font-size: 0.8rem; color: var(--text-muted); cursor: pointer;
+      text-decoration: underline; text-underline-offset: 2px;
+    }
+    .photo-upload-sm label:hover { color: var(--primary); }
+    .photo-upload-sm input[type="file"] { display: none; }
+    .message-card .card-msg {
+      font-size: 0.9rem; color: var(--text-muted); line-height: 1.65;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .message-card .card-time {
+      font-size: 0.75rem; color: #b0b0b0; margin-top: 12px;
+    }
+
+    .empty-state {
+      text-align: center; padding: 64px 24px; color: var(--text-muted);
+    }
+    .empty-state .empty-heart { font-size: 3rem; margin-bottom: 16px; }
+    .empty-state p { font-size: 1rem; }
+
+    /* Share modal */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+      z-index: 1000; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--card); border-radius: var(--radius);
+      padding: 40px; max-width: 440px; width: 100%;
+      box-shadow: 0 16px 64px rgba(0,0,0,0.15);
+      animation: fadeUp 0.3s ease-out;
+    }
+    .modal h2 { font-size: 1.4rem; margin-bottom: 12px; }
+    .modal p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
+    .modal .share-url {
+      display: flex; gap: 8px;
+    }
+    .modal .share-url input {
+      flex: 1; padding: 12px 14px; border: 2px solid #e5e7eb;
+      border-radius: 10px; font-size: 0.9rem; font-family: 'Inter', sans-serif;
+      background: #f9fafb; outline: none;
+    }
+    .modal .share-url input:focus { border-color: var(--primary-light); }
+    .copied-toast {
+      display: none; margin-top: 12px; padding: 8px 16px;
+      background: #d1fae5; color: #065f46; border-radius: 8px;
+      font-size: 0.85rem; font-weight: 500; text-align: center;
+    }
+    .copied-toast.show { display: block; animation: fadeIn 0.3s ease-out; }
+
+    /* ═══════════════════════════════════════
+       NOT FOUND
+       ═══════════════════════════════════════ */
+    .notfound-page {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; text-align: center; padding: 24px;
+    }
+    .notfound-page h1 { font-size: 2.5rem; margin-bottom: 12px; }
+    .notfound-page p { color: var(--text-muted); margin-bottom: 24px; }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 480px) {
+      .create-container { padding: 32px 24px; }
+      .add-message-card { padding: 24px; }
+      .board-header { padding: 32px 16px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════ HOME PAGE ═══════════════ -->
+  <div id="page-home" class="page">
+    <header class="hero">
+      <p class="badge animate-fade-in">You Matter</p>
+      <h1 class="animate-fade-up delay-1">When someone is leaving, the connections don't have to.</h1>
+      <p class="subtitle animate-fade-up delay-2">Create a board where colleagues can share what someone truly meant to them — as a person, not just an employee.</p>
+      <div class="cta animate-fade-up delay-3">
+        <a href="#/create" class="btn btn-primary">Create a Board</a>
+      </div>
+    </header>
+
+    <section class="how-section">
+      <h2>How it works</h2>
+      <div class="steps">
+        <div class="step-card animate-fade-up delay-1">
+          <div class="step-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
+          </div>
+          <h3>Create a board for someone</h3>
+          <p>Start a farewell board in seconds — no account needed.</p>
+        </div>
+        <div class="step-card animate-fade-up delay-2">
+          <div class="step-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"/></svg>
+          </div>
+          <h3>Share the link with colleagues</h3>
+          <p>Send it via WhatsApp, personal email, or text — anywhere outside company systems.</p>
+        </div>
+        <div class="step-card animate-fade-up delay-3">
+          <div class="step-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+          </div>
+          <h3>They receive words that matter</h3>
+          <p>A keepsake page of heartfelt notes from the people they worked with.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="example-section">
+      <h2>A board is a keepsake</h2>
+      <p class="subtitle">Here's what it looks like when colleagues share what someone meant to them.</p>
+      <div class="example-grid">
+        <div class="example-card">
+          <div class="author">Sarah M.</div>
+          <div class="msg">"You always made Monday mornings bearable with your terrible jokes. The office won't be the same without you."</div>
+        </div>
+        <div class="example-card">
+          <div class="author">James K.</div>
+          <div class="msg">"Thank you for mentoring me when I first joined. I wouldn't be where I am today without your patience and kindness."</div>
+        </div>
+        <div class="example-card">
+          <div class="author">Priya R.</div>
+          <div class="msg">"Your calm during that product launch crisis taught me more about leadership than any book ever could."</div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>Built with care for the people who matter</p>
+      <a href="#/create">Create a Board</a>
+    </footer>
+  </div>
+
+  <!-- ═══════════════ CREATE PAGE ═══════════════ -->
+  <div id="page-create" class="page">
+    <div class="create-page">
+      <div class="create-container animate-fade-up">
+        <a href="#/" class="back-link">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+          Back
+        </a>
+        <h1>Create a board</h1>
+        <p class="desc">Give someone a goodbye they'll never forget.</p>
+        <form id="create-form">
+          <div class="form-group">
+            <label for="recipient-name">Who is this board for?</label>
+            <input type="text" id="recipient-name" placeholder="e.g. Alex Chen" required autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label>Their photo (optional)</label>
+            <div class="photo-upload">
+              <div class="photo-preview" id="recipient-photo-preview">
+                <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+              </div>
+              <div>
+                <label class="photo-upload-btn" for="recipient-photo-input">
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg>
+                  Upload photo
+                </label>
+                <input type="file" id="recipient-photo-input" accept="image/*">
+                <p class="hint" style="margin-top:4px">A face makes it personal.</p>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="board-dedication">Your dedication <span style="color:var(--primary)">*</span></label>
+            <textarea id="board-dedication" placeholder="For Sarah, who made Monday mornings survivable" rows="3" required></textarea>
+            <p class="hint">This sets the emotional tone for the whole board.</p>
+          </div>
+          <div class="form-group">
+            <label for="creator-name">Your name (optional)</label>
+            <input type="text" id="creator-name" placeholder="e.g. Jordan" autocomplete="off">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; margin-top:8px;">Create Board</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ BOARD PAGE ═══════════════ -->
+  <div id="page-board" class="page">
+    <div class="board-page">
+      <div class="board-header">
+        <a href="#/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;font-size:0.9rem;color:#6b7280;text-decoration:none;margin-bottom:16px;">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+          Home
+        </a>
+        <div class="board-photo" id="board-photo" style="display:none;">
+          <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+        </div>
+        <h1 id="board-title"></h1>
+        <p id="board-dedication-display" style="font-family:'Playfair Display',Georgia,serif; font-size:1.15rem; font-style:italic; color:var(--primary); margin:8px auto 0; max-width:500px;"></p>
+        <p class="board-subtitle" id="board-note-display"></p>
+        <div class="board-actions">
+          <button class="btn btn-secondary btn-sm" onclick="openShareModal()">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"/></svg>
+            Share Link
+          </button>
+        </div>
+      </div>
+
+      <div class="board-body">
+        <div class="add-message-card" id="add-message-card">
+          <!-- Step 0: Choose path -->
+          <div class="msg-step active" id="msg-step-choose">
+            <div class="card-header">
+              <h3>Add your message</h3>
+              <button class="close-btn" onclick="collapseMessageCard()">&times;</button>
+            </div>
+            <div class="msg-options">
+              <div class="msg-option" onclick="showFreeWrite()">
+                <div class="opt-icon pencil">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="#c44868" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"/></svg>
+                </div>
+                <div class="opt-text">
+                  <h4>I know what I want to say</h4>
+                  <p>Write freely in your own words</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 1: Free write -->
+          <div class="msg-step" id="msg-step-free">
+            <div class="card-header">
+              <h3>Write your message</h3>
+              <button class="close-btn" onclick="backToChoose()">&times;</button>
+            </div>
+            <form id="message-form">
+              <div class="form-group">
+                <label for="msg-author">Your name (optional)</label>
+                <input type="text" id="msg-author" placeholder="Your name" autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label for="msg-text">Your message</label>
+                <textarea id="msg-text" placeholder="Share what this person meant to you..." rows="4" required></textarea>
+              </div>
+              <div class="photo-upload-sm" style="margin-bottom:16px;">
+                <div class="photo-preview-sm" id="msg-photo-preview">
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#c0c0c0" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+                </div>
+                <label for="msg-photo-input">Add your photo (optional)</label>
+                <input type="file" id="msg-photo-input" accept="image/*">
+              </div>
+              <button type="submit" class="btn btn-primary" style="width:100%;">Send Message</button>
+            </form>
+          </div>
+
+          <!-- Step 2: Guided prompts -->
+          <div class="msg-step" id="msg-step-guided">
+            <div class="card-header">
+              <h3>Let's find the words</h3>
+              <button class="close-btn" onclick="backToChoose()">&times;</button>
+            </div>
+            <div class="guided-progress-bar" id="guided-progress-bar">
+              <div class="seg filled"></div>
+              <div class="seg"></div>
+              <div class="seg"></div>
+            </div>
+            <form id="guided-form">
+              <div class="prompt-step active" id="guided-1">
+                <label id="guided-label-1">What's a moment with them you'll always remember?</label>
+                <textarea id="guided-memory" rows="5" placeholder="It can be big or small — a project, a conversation, a Tuesday afternoon..."></textarea>
+              </div>
+              <div class="prompt-step" id="guided-2" style="display:none">
+                <label id="guided-label-2">What did they bring to your work life?</label>
+                <textarea id="guided-quality" rows="5" placeholder="Think about how they made you feel, not what they delivered..."></textarea>
+              </div>
+              <div class="prompt-step" id="guided-3" style="display:none">
+                <label id="guided-label-3">Anything else you want them to know?</label>
+                <textarea id="guided-wish" rows="5" placeholder="Last chance to say the thing you never got around to saying..."></textarea>
+              </div>
+              <div class="prompt-step" id="guided-review" style="display:none">
+                <label>Here's your message</label>
+                <textarea id="guided-final" rows="5" style="border: 2px solid var(--primary) !important;"></textarea>
+                <p class="preview-note">Feel free to edit — this is your message</p>
+                <div class="form-group" style="margin-top:12px;">
+                  <label for="guided-author" style="font-weight:500; font-size:0.9rem;">Your name (optional)</label>
+                  <input type="text" id="guided-author" placeholder="Your name" autocomplete="off">
+                </div>
+                <div class="photo-upload-sm" style="margin-bottom:16px;">
+                  <div class="photo-preview-sm" id="guided-photo-preview">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#c0c0c0" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+                  </div>
+                  <label for="guided-photo-input">Add your photo (optional)</label>
+                  <input type="file" id="guided-photo-input" accept="image/*">
+                </div>
+              </div>
+              <div class="prompt-nav" id="guided-nav">
+                <button type="button" class="btn-back" id="guided-back" onclick="guidedBack()">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+                  Back
+                </button>
+                <button type="button" class="btn-next" id="guided-next" onclick="guidedNext()">
+                  Next
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="reopen-add-msg" style="display:none; justify-content:center; margin-bottom:32px;">
+          <button class="btn btn-primary" onclick="expandMessageCard()">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Add your message
+          </button>
+        </div>
+        <div id="messages-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ NOT FOUND ═══════════════ -->
+  <div id="page-404" class="page">
+    <div class="notfound-page">
+      <div>
+        <h1>Board not found</h1>
+        <p>This board doesn't exist or the link is incorrect.</p>
+        <a href="#/" class="btn btn-primary">Go Home</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SHARE MODAL ═══════════════ -->
+  <div id="share-modal" class="modal-overlay" onclick="if(event.target===this)closeShareModal()">
+    <div class="modal">
+      <h2>Share this board</h2>
+      <p>Copy the message below and send it to colleagues via WhatsApp, text, or personal email.</p>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label for="share-message" style="font-size:0.85rem;">Ready-to-share message</label>
+        <textarea id="share-message" rows="4" style="font-size:0.9rem;"></textarea>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-primary btn-sm" style="flex:1;" onclick="copyShareMessage()">Copy Message</button>
+      </div>
+      <div class="copied-toast" id="copied-toast">Copied to clipboard!</div>
+      <button class="btn btn-outline btn-sm" style="width:100%;margin-top:12px;" onclick="closeShareModal()">Close</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore-compat.js"></script>
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyCDWzhZKP_MxiqQp6S1F537plG6xb_Go_E",
+      authDomain: "farewellboard.firebaseapp.com",
+      projectId: "farewellboard",
+      storageBucket: "farewellboard.firebasestorage.app",
+      messagingSenderId: "348214625685",
+      appId: "1:348214625685:web:f29cb7d7049d0169f8a29c",
+      measurementId: "G-FW81XGQZ9Q"
+    };
+    var firebaseApp = firebase.initializeApp(firebaseConfig);
+    var analytics = firebase.analytics();
+    var db = firebase.firestore();
+  </script>
+
+  <script>
+    // ─── Data layer (localStorage) ───
+    function getBoards() {
+      return JSON.parse(localStorage.getItem('ym_boards') || '{}');
+    }
+    function saveBoards(boards) {
+      localStorage.setItem('ym_boards', JSON.stringify(boards));
+    }
+    function generateId() {
+      return Math.random().toString(36).substring(2, 10);
+    }
+
+    // ─── Router ───
+    function navigate(hash) {
+      window.location.hash = hash;
+    }
+
+    function getRoute() {
+      const hash = window.location.hash.slice(1) || '/';
+      if (hash === '/' || hash === '') return { page: 'home' };
+      if (hash === '/create') return { page: 'create' };
+      const boardMatch = hash.match(/^\/board\/([a-z0-9]+)$/);
+      if (boardMatch) return { page: 'board', id: boardMatch[1] };
+      return { page: '404' };
+    }
+
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const el = document.getElementById('page-' + pageId);
+      if (el) el.classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function router() {
+      const route = getRoute();
+      if (route.page === 'board') {
+        renderBoard(route.id);
+      } else {
+        showPage(route.page);
+      }
+    }
+
+    window.addEventListener('hashchange', router);
+    window.addEventListener('DOMContentLoaded', router);
+
+    // ─── Photo helpers ───
+    var recipientPhotoData = null;
+    var msgPhotoData = null;
+
+    function handlePhotoInput(inputId, previewId, callback) {
+      document.getElementById(inputId).addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          // Resize to save localStorage space
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var max = 200;
+            var w = img.width, h = img.height;
+            if (w > h) { if (w > max) { h = h * max / w; w = max; } }
+            else { if (h > max) { w = w * max / h; h = max; } }
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            var dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            var prev = document.getElementById(previewId);
+            prev.innerHTML = '<img src="' + dataUrl + '" alt="Photo">';
+            prev.classList.add('has-photo');
+            callback(dataUrl);
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    var guidedPhotoData = null;
+
+    handlePhotoInput('recipient-photo-input', 'recipient-photo-preview', function(d) { recipientPhotoData = d; });
+    handlePhotoInput('msg-photo-input', 'msg-photo-preview', function(d) { msgPhotoData = d; });
+    handlePhotoInput('guided-photo-input', 'guided-photo-preview', function(d) { guidedPhotoData = d; });
+
+    // ─── Create board ───
+    document.getElementById('create-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('recipient-name').value.trim();
+      const dedication = document.getElementById('board-dedication').value.trim();
+      const creator = document.getElementById('creator-name').value.trim();
+      if (!name || !dedication) return;
+
+      const id = generateId();
+      const boards = getBoards();
+      boards[id] = {
+        recipientName: name,
+        recipientPhoto: recipientPhotoData || null,
+        dedication: dedication,
+        creatorName: creator,
+        createdAt: new Date().toISOString(),
+        messages: []
+      };
+      saveBoards(boards);
+
+      // Reset form and photo state
+      this.reset();
+      recipientPhotoData = null;
+      var prev = document.getElementById('recipient-photo-preview');
+      prev.innerHTML = '<svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>';
+      prev.classList.remove('has-photo');
+
+      navigate('#/board/' + id);
+    });
+
+    // ─── Render board ───
+    function renderBoard(id) {
+      const boards = getBoards();
+      const board = boards[id];
+
+      if (!board) {
+        showPage('404');
+        return;
+      }
+
+      showPage('board');
+
+      var photoEl = document.getElementById('board-photo');
+      if (board.recipientPhoto) {
+        photoEl.innerHTML = '<img src="' + board.recipientPhoto + '" alt="Photo">';
+        photoEl.style.display = 'flex';
+      } else {
+        photoEl.style.display = 'none';
+      }
+
+      document.getElementById('board-title').textContent =
+        'Kind words for ' + board.recipientName;
+
+      const dedEl = document.getElementById('board-dedication-display');
+      if (board.dedication) {
+        dedEl.textContent = '"' + board.dedication + '"';
+        dedEl.style.display = 'block';
+      } else {
+        dedEl.style.display = 'none';
+      }
+
+      const noteEl = document.getElementById('board-note-display');
+      if (board.note) {
+        noteEl.textContent = board.note;
+        noteEl.style.display = 'block';
+      } else {
+        noteEl.style.display = 'none';
+      }
+
+      renderMessages(board.messages);
+    }
+
+    function renderMessages(messages) {
+      const container = document.getElementById('messages-container');
+      if (!messages || messages.length === 0) {
+        container.innerHTML =
+          '<div class="empty-state">' +
+            '<div class="empty-heart">&#10084;&#65039;</div>' +
+            '<p>No messages yet. Be the first to share some kind words!</p>' +
+          '</div>';
+        return;
+      }
+
+      let html = '<div class="messages-grid">';
+      // Show newest first
+      const sorted = [...messages].reverse();
+      sorted.forEach(function(m) {
+        const initials = m.author.split(' ').map(function(w){ return w[0]; }).join('').toUpperCase().slice(0, 2);
+        const time = new Date(m.timestamp).toLocaleDateString('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric'
+        });
+        var avatarContent = m.photo
+          ? '<img src="' + m.photo + '" alt="' + escapeHtml(m.author) + '">'
+          : initials;
+        html +=
+          '<div class="message-card">' +
+            '<div class="card-author">' +
+              '<span class="avatar">' + avatarContent + '</span>' +
+              '<span>' + escapeHtml(m.author) + '</span>' +
+            '</div>' +
+            '<div class="card-msg">' + escapeHtml(m.text) + '</div>' +
+            '<div class="card-time">' + time + '</div>' +
+          '</div>';
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    // ─── Message flow: step navigation ───
+    function showStep(stepId) {
+      document.querySelectorAll('#add-message-card .msg-step').forEach(function(s) { s.classList.remove('active'); });
+      document.getElementById(stepId).classList.add('active');
+    }
+    function showFreeWrite() { showStep('msg-step-free'); }
+    function getRecipientName() {
+      var route = getRoute();
+      var boards = getBoards();
+      var board = boards[route.id];
+      return board ? board.recipientName : 'them';
+    }
+    function showGuided() {
+      guidedStepNum = 1;
+      var name = getRecipientName();
+      document.getElementById('guided-label-1').textContent = "What\u2019s a moment with " + name + " you\u2019ll always remember?";
+      document.getElementById('guided-label-2').textContent = "What did " + name + " bring to your work life?";
+      document.getElementById('guided-label-3').textContent = "Anything else you want " + name + " to know?";
+      updateGuidedUI();
+      showStep('msg-step-guided');
+    }
+    function backToChoose() {
+      showStep('msg-step-choose');
+    }
+
+    // ─── Free write submit ───
+    document.getElementById('message-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var route = getRoute();
+      if (route.page !== 'board') return;
+
+      var author = document.getElementById('msg-author').value.trim() || 'Anonymous';
+      var text = document.getElementById('msg-text').value.trim();
+      if (!text) return;
+
+      submitMessage(route.id, author, text, msgPhotoData);
+
+      // Reset
+      document.getElementById('msg-text').value = '';
+      document.getElementById('msg-photo-input').value = '';
+      msgPhotoData = null;
+      resetPhotoPreview('msg-photo-preview');
+      backToChoose();
+    });
+
+    // ─── Guided prompts ───
+    var guidedStepNum = 1;
+    var guidedSteps = ['guided-1', 'guided-2', 'guided-3', 'guided-review'];
+
+    function updateGuidedUI() {
+      guidedSteps.forEach(function(id) { document.getElementById(id).style.display = 'none'; });
+      document.getElementById(guidedSteps[guidedStepNum - 1]).style.display = 'block';
+
+      // Progress bar
+      var bar = document.getElementById('guided-progress-bar');
+      if (guidedStepNum <= 3) {
+        bar.style.display = 'flex';
+        var segs = bar.querySelectorAll('.seg');
+        segs.forEach(function(s, i) {
+          s.classList.toggle('filled', i < guidedStepNum);
+        });
+      } else {
+        bar.style.display = 'none';
+      }
+
+      // Back button: hide on step 1
+      var backBtn = document.getElementById('guided-back');
+      backBtn.style.display = guidedStepNum === 1 ? 'none' : 'inline-flex';
+
+      // Next button
+      var nextBtn = document.getElementById('guided-next');
+      var arrowRight = '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>';
+      var eyeIcon = '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>';
+      if (guidedStepNum === 4) {
+        nextBtn.innerHTML = 'Send Message';
+      } else if (guidedStepNum === 3) {
+        nextBtn.innerHTML = 'Preview Your Message ' + eyeIcon;
+      } else {
+        nextBtn.innerHTML = 'Next ' + arrowRight;
+      }
+    }
+
+    function guidedBack() {
+      if (guidedStepNum === 1) { backToChoose(); return; }
+      guidedStepNum--;
+      updateGuidedUI();
+    }
+
+    // ─── Guided navigation ───
+    function buildFallbackMessage(memory, quality, wish) {
+      var parts = [];
+      if (memory) parts.push(memory);
+      if (quality) parts.push(quality);
+      if (wish) parts.push(wish);
+      return parts.join('\n\n');
+    }
+
+    function guidedNext() {
+      if (guidedStepNum < 3) {
+        guidedStepNum++;
+        updateGuidedUI();
+      } else if (guidedStepNum === 3) {
+        var memory = document.getElementById('guided-memory').value.trim();
+        var quality = document.getElementById('guided-quality').value.trim();
+        var wish = document.getElementById('guided-wish').value.trim();
+        document.getElementById('guided-final').value = buildFallbackMessage(memory, quality, wish);
+        guidedStepNum = 4;
+        updateGuidedUI();
+      } else if (guidedStepNum === 4) {
+        // Submit
+        var route = getRoute();
+        if (route.page !== 'board') return;
+        var author = document.getElementById('guided-author').value.trim() || 'Anonymous';
+        var text = document.getElementById('guided-final').value.trim();
+        if (!text) return;
+
+        submitMessage(route.id, author, text, guidedPhotoData);
+
+        // Reset guided form
+        document.getElementById('guided-memory').value = '';
+        document.getElementById('guided-quality').value = '';
+        document.getElementById('guided-wish').value = '';
+        document.getElementById('guided-final').value = '';
+        document.getElementById('guided-author').value = '';
+        document.getElementById('guided-photo-input').value = '';
+        guidedPhotoData = null;
+        resetPhotoPreview('guided-photo-preview');
+        backToChoose();
+      }
+    }
+
+
+    // ─── Shared submit helper ───
+    function submitMessage(boardId, author, text, photo) {
+      var boards = getBoards();
+      if (!boards[boardId]) return;
+      boards[boardId].messages.push({
+        author: author,
+        photo: photo || null,
+        text: text,
+        timestamp: new Date().toISOString()
+      });
+      saveBoards(boards);
+      renderMessages(boards[boardId].messages);
+    }
+
+    function collapseMessageCard() {
+      var card = document.getElementById('add-message-card');
+      card.style.display = 'none';
+      var reopenBtn = document.getElementById('reopen-add-msg');
+      if (reopenBtn) reopenBtn.style.display = 'flex';
+    }
+    function expandMessageCard() {
+      var card = document.getElementById('add-message-card');
+      card.style.display = 'block';
+      showStep('msg-step-choose');
+      var reopenBtn = document.getElementById('reopen-add-msg');
+      if (reopenBtn) reopenBtn.style.display = 'none';
+    }
+
+    function resetPhotoPreview(previewId) {
+      var el = document.getElementById(previewId);
+      el.innerHTML = '<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#c0c0c0" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>';
+      el.classList.remove('has-photo');
+    }
+
+    // ─── Share modal ───
+    function openShareModal() {
+      var route = getRoute();
+      var boards = getBoards();
+      var board = boards[route.id];
+      var name = board ? board.recipientName : 'someone';
+      var url = window.location.href;
+      var msg = 'Hey \u2014 I\u2019m collecting messages for ' + name + '. If you\u2019d like to share what they meant to you, add yours here: ' + url;
+      document.getElementById('share-message').value = msg;
+      document.getElementById('share-modal').classList.add('active');
+      document.getElementById('copied-toast').classList.remove('show');
+    }
+    function closeShareModal() {
+      document.getElementById('share-modal').classList.remove('active');
+    }
+    function copyShareMessage() {
+      var textarea = document.getElementById('share-message');
+      navigator.clipboard.writeText(textarea.value).then(function() {
+        document.getElementById('copied-toast').classList.add('show');
+        setTimeout(function() {
+          document.getElementById('copied-toast').classList.remove('show');
+        }, 2000);
+      });
+    }
+
+    // ─── Helpers ───
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+  </script>
+</body>
 </html>
