@@ -1,0 +1,44 @@
+.create-page { padding: 2rem 0 4rem; }
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--warm-coral); }
+
+.create-card {
+  max-width: 560px;
+  margin: 0 auto;
+}
+.create-card h1 { margin-bottom: 0.25rem; }
+.create-subtitle { color: var(--text-secondary); margin-bottom: 2rem; }
+
+.create-form { display: flex; flex-direction: column; gap: 1.25rem; }
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+.field span { font-weight: 500; font-size: 0.9rem; }
+.required { color: var(--warm-coral); }
+
+.photo-upload {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.photo-circle {
+  flex-shrink: 0;
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  border: 2px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.photo-circle img { width: 100%; height: 100%; object-fit: cover; }
+
+.submit-btn { margin-top: 0.5rem; align-self: flex-start; }
