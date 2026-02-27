@@ -184,6 +184,39 @@
       display: inline-flex; margin-top: 16px;
     }
 
+    /* Contact FAB */
+    .contact-fab {
+      position: fixed; bottom: 28px; right: 28px; z-index: 900;
+      padding: 14px 24px; border-radius: 999px; border: none;
+      background: var(--primary); color: #fff;
+      font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600;
+      cursor: pointer; box-shadow: 0 4px 20px rgba(224,90,122,0.35);
+      transition: all 0.25s ease; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .contact-fab:hover {
+      background: var(--primary-dark);
+      box-shadow: 0 6px 28px rgba(224,90,122,0.45);
+      transform: translateY(-2px);
+    }
+    /* Contact modal */
+    .contact-modal .modal { max-width: 480px; }
+    .contact-modal .modal h2 { margin-bottom: 4px; }
+    .contact-modal .modal .contact-subtitle {
+      color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;
+    }
+    .contact-row { display: flex; gap: 12px; }
+    .contact-row .form-group { flex: 1; }
+    .contact-status {
+      display: none; margin-top: 12px; padding: 10px 16px;
+      border-radius: 8px; font-size: 0.85rem; font-weight: 500; text-align: center;
+    }
+    .contact-status.success { display: block; background: #d1fae5; color: #065f46; }
+    .contact-status.error { display: block; background: #fee2e2; color: #991b1b; }
+    @media (max-width: 480px) {
+      .contact-row { flex-direction: column; gap: 0; }
+      .contact-fab { bottom: 20px; right: 20px; padding: 12px 20px; font-size: 0.85rem; }
+    }
+
     /* ═══════════════════════════════════════
        CREATE PAGE
        ═══════════════════════════════════════ */
@@ -775,6 +808,11 @@
       <p>Built with ❤️ for the people who matter</p>
       <a href="#/create" class="btn btn-primary" style="margin-top:12px;">Create a Board</a>
     </footer>
+
+    <button class="contact-fab" onclick="openContactModal()">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+      Contact Us
+    </button>
   </div>
 
   <!-- ═══════════════ CREATE PAGE ═══════════════ -->
@@ -816,6 +854,11 @@
           <div class="form-group">
             <label for="creator-name">Your name (optional)</label>
             <input type="text" id="creator-name" placeholder="e.g. Jordan" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="creator-email">Your email (optional)</label>
+            <input type="email" id="creator-email" placeholder="e.g. jordan@email.com" autocomplete="email">
+            <p class="hint">We'll send you the management link so you don't lose it.</p>
           </div>
           <button type="submit" class="btn btn-primary" style="width:100%; margin-top:8px;">Create Board</button>
         </form>
@@ -918,7 +961,10 @@
         </button>
         <div id="manage-link-copied" style="text-align:center; color:var(--primary); font-size:0.85rem; font-weight:600; margin-top:8px; opacity:0; transition:opacity 0.3s;">Copied to clipboard!</div>
       </div>
-      <div class="manage-warning" style="margin-top:16px;">
+      <div id="share-email-confirmation" style="display:none; margin-top:16px; background:#d1fae5; border:1.5px solid #10b981; border-radius:12px; padding:16px 20px; font-size:0.85rem; color:#065f46; line-height:1.6;">
+        We've also sent these links to <strong id="share-email-address"></strong>.
+      </div>
+      <div id="share-save-warning" class="manage-warning" style="margin-top:16px;">
         <strong>Save this link!</strong> This is the only way to manage your board and share it with <span id="recipient-warn-name"></span> when you're ready. Bookmark it or save it somewhere safe — you won't be able to recover it.
       </div>
     </div>
@@ -976,6 +1022,37 @@
     </div>
   </div>
 
+  <!-- ═══════════════ CONTACT MODAL ═══════════════ -->
+  <div id="contact-modal" class="modal-overlay contact-modal" onclick="if(event.target===this)closeContactModal()">
+    <div class="modal">
+      <h2>About Farewell Board</h2>
+      <p class="contact-subtitle">Have a question or feedback? We'd love to hear from you.</p>
+      <form id="contact-form" onsubmit="submitContactForm(event)">
+        <div class="contact-row">
+          <div class="form-group">
+            <label for="contact-first">First name *</label>
+            <input type="text" id="contact-first" required placeholder="Jane">
+          </div>
+          <div class="form-group">
+            <label for="contact-last">Last name</label>
+            <input type="text" id="contact-last" placeholder="Doe">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="contact-email">Email *</label>
+          <input type="email" id="contact-email" required placeholder="jane@example.com">
+        </div>
+        <div class="form-group">
+          <label for="contact-message">Message *</label>
+          <textarea id="contact-message" rows="4" required placeholder="Your message..."></textarea>
+        </div>
+        <button type="submit" id="contact-submit" class="btn btn-primary btn-sm" style="width:100%;">Send Message</button>
+      </form>
+      <div class="contact-status" id="contact-status"></div>
+      <button class="btn btn-outline btn-sm" style="width:100%;margin-top:12px;" onclick="closeContactModal()">Close</button>
+    </div>
+  </div>
+
   <script>
     // ─── Firebase (lazy-loaded) ───
     var db = null;
@@ -984,29 +1061,29 @@
     function loadFirebase() {
       if (_firebaseReady) return _firebaseReady;
       _firebaseReady = new Promise(function(resolve, reject) {
-        var s1 = document.createElement('script');
-        s1.src = 'https://www.gstatic.com/firebasejs/11.4.0/firebase-app-compat.js';
-        s1.onload = function() {
-          var s2 = document.createElement('script');
-          s2.src = 'https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore-compat.js';
-          s2.onload = function() {
-            firebase.initializeApp({
-              apiKey: "AIzaSyCDWzhZKP_MxiqQp6S1F537plG6xb_Go_E",
-              authDomain: "farewellboard.firebaseapp.com",
-              projectId: "farewellboard",
-              storageBucket: "farewellboard.firebasestorage.app",
-              messagingSenderId: "348214625685",
-              appId: "1:348214625685:web:f29cb7d7049d0169f8a29c"
-            });
-            db = firebase.firestore();
-            db.enablePersistence().catch(function() {});
-            resolve();
+        // Load Firebase config from auto-init (served by Firebase Hosting)
+        var s0 = document.createElement('script');
+        s0.src = '/__/firebase/init.js';
+        s0.onload = function() {
+          var s1 = document.createElement('script');
+          s1.src = 'https://www.gstatic.com/firebasejs/11.4.0/firebase-app-compat.js';
+          s1.onload = function() {
+            var s2 = document.createElement('script');
+            s2.src = 'https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore-compat.js';
+            s2.onload = function() {
+              firebase.initializeApp(firebase.config ? firebase.config() : window.__firebase_config);
+              db = firebase.firestore();
+              db.enablePersistence().catch(function() {});
+              resolve();
+            };
+            s2.onerror = reject;
+            document.head.appendChild(s2);
           };
-          s2.onerror = reject;
-          document.head.appendChild(s2);
+          s1.onerror = reject;
+          document.head.appendChild(s1);
         };
-        s1.onerror = reject;
-        document.head.appendChild(s1);
+        s0.onerror = reject;
+        document.head.appendChild(s0);
       });
       return _firebaseReady;
     }
@@ -1062,8 +1139,8 @@
       if (hash === '/create') return { page: 'create' };
       const manageMatch = hash.match(/^\/board\/([a-z0-9-]+)\/manage\/([a-z0-9-]+)$/i);
       if (manageMatch) return { page: 'manage', id: manageMatch[1], token: manageMatch[2] };
-      const respondMatch = hash.match(/^\/board\/([a-z0-9]+)\/respond$/);
-      if (respondMatch) return { page: 'respond', id: respondMatch[1] };
+      const respondMatch = hash.match(/^\/board\/([a-z0-9]+)\/respond\/([a-z0-9-]+)$/i);
+      if (respondMatch) return { page: 'respond', id: respondMatch[1], token: respondMatch[2] };
       const shareMatch = hash.match(/^\/share\/([a-z0-9]+)\/([a-z0-9-]+)$/i);
       if (shareMatch) return { page: 'share', id: shareMatch[1], token: shareMatch[2] };
       const boardMatch = hash.match(/^\/board\/([a-z0-9]+)$/);
@@ -1083,7 +1160,7 @@
       if (route.page === 'board') {
         await renderBoard(route.id);
       } else if (route.page === 'respond') {
-        await renderRespondPage(route.id);
+        await renderRespondPage(route.id, route.token);
       } else if (route.page === 'share') {
         await renderSharePage(route.id, route.token);
       } else if (route.page === 'manage') {
@@ -1141,14 +1218,18 @@
 
       const id = generateId();
       const manageToken = (crypto.randomUUID ? crypto.randomUUID() : generateId() + generateId() + generateId());
+      const respondToken = (crypto.randomUUID ? crypto.randomUUID() : generateId() + generateId() + generateId());
+      const creatorEmail = document.getElementById('creator-email').value.trim();
       const boardData = {
         recipientName: name,
         recipientPhoto: recipientPhotoData || null,
         dedication: dedication,
         creatorName: creator,
+        creatorEmail: creatorEmail || null,
         createdAt: new Date().toISOString(),
         messages: [],
         manageToken: manageToken,
+        respondToken: respondToken,
         isClosed: false
       };
 
@@ -1158,6 +1239,24 @@
         console.error('Failed to save board:', err);
         alert('Could not create board. Please try again.');
         return;
+      }
+
+      // Send email with management link if creator provided email
+      if (creatorEmail) {
+        var boardUrl = window.location.origin + window.location.pathname + '#/board/' + id;
+        var manageUrl = window.location.origin + window.location.pathname + '#/board/' + id + '/manage/' + manageToken;
+        fetch('/api/board-created-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: creatorEmail,
+            recipientName: name,
+            boardUrl: boardUrl,
+            manageUrl: manageUrl
+          })
+        }).catch(function(err) {
+          console.error('Failed to send email:', err);
+        });
       }
 
       // Reset form and photo state
@@ -1318,6 +1417,18 @@
       document.getElementById('manage-link-input').value = manageUrl;
       document.getElementById('recipient-share-name').textContent = board.recipientName;
       document.getElementById('recipient-warn-name').textContent = board.recipientName;
+
+      // Conditional email confirmation vs. save warning
+      var emailConfirmation = document.getElementById('share-email-confirmation');
+      var saveWarning = document.getElementById('share-save-warning');
+      if (board.creatorEmail) {
+        emailConfirmation.style.display = 'block';
+        document.getElementById('share-email-address').textContent = board.creatorEmail;
+        saveWarning.style.display = 'none';
+      } else {
+        emailConfirmation.style.display = 'none';
+        saveWarning.style.display = 'block';
+      }
     }
 
     function copySharePageMessage() {
@@ -1371,7 +1482,7 @@
         ? '<img src="' + board.recipientPhoto + '" alt="Photo">'
         : '<svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#c0c0c0" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>';
 
-      var respondUrl = window.location.origin + window.location.pathname + '#/board/' + id + '/respond';
+      var respondUrl = window.location.origin + window.location.pathname + '#/board/' + id + '/respond/' + board.respondToken;
       var recipientMsg = 'Hey ' + board.recipientName + ', some of us put something together for you. We wanted you to know what you meant to us: ' + respondUrl;
 
       container.innerHTML =
@@ -1450,7 +1561,7 @@
     }
 
     // ─── Respond page (recipient sees board + can respond) ───
-    async function renderRespondPage(id) {
+    async function renderRespondPage(id, token) {
       showPage('respond');
 
       document.getElementById('respond-title').textContent = 'Loading\u2026';
@@ -1473,6 +1584,17 @@
 
       if (!board) {
         showPage('404');
+        return;
+      }
+
+      if (board.respondToken !== token) {
+        document.getElementById('respond-title').textContent = '';
+        document.getElementById('respond-messages-container').innerHTML =
+          '<div class="manage-invalid">' +
+            '<h2>This link isn\'t valid</h2>' +
+            '<p>The link you used doesn\'t match this board. Make sure you\'re using the correct link.</p>' +
+            '<a href="#/" class="btn btn-primary">Go Home</a>' +
+          '</div>';
         return;
       }
 
@@ -1717,6 +1839,51 @@
         setTimeout(function() {
           document.getElementById('copied-toast').classList.remove('show');
         }, 2000);
+      });
+    }
+
+    // ─── Contact modal ───
+    function openContactModal() {
+      document.getElementById('contact-form').reset();
+      document.getElementById('contact-status').className = 'contact-status';
+      document.getElementById('contact-status').textContent = '';
+      document.getElementById('contact-submit').disabled = false;
+      document.getElementById('contact-submit').textContent = 'Send Message';
+      document.getElementById('contact-modal').classList.add('active');
+    }
+    function closeContactModal() {
+      document.getElementById('contact-modal').classList.remove('active');
+    }
+    function submitContactForm(e) {
+      e.preventDefault();
+      var btn = document.getElementById('contact-submit');
+      var status = document.getElementById('contact-status');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      status.className = 'contact-status';
+
+      var body = JSON.stringify({
+        firstName: document.getElementById('contact-first').value.trim(),
+        lastName: document.getElementById('contact-last').value.trim(),
+        email: document.getElementById('contact-email').value.trim(),
+        message: document.getElementById('contact-message').value.trim()
+      });
+
+      fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: body
+      }).then(function(res) {
+        if (!res.ok) throw new Error('Server error');
+        status.className = 'contact-status success';
+        status.textContent = 'Message sent! We\'ll get back to you soon.';
+        document.getElementById('contact-form').reset();
+        btn.textContent = 'Sent!';
+      }).catch(function() {
+        status.className = 'contact-status error';
+        status.textContent = 'Something went wrong. Please try again.';
+        btn.disabled = false;
+        btn.textContent = 'Send Message';
       });
     }
 
