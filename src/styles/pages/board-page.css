@@ -1,0 +1,68 @@
+.board-page { padding: 2rem 0 6rem; }
+
+.board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.board-hero {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+.board-avatar {
+  width: 96px; height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 1rem;
+  border: 3px solid var(--warm-coral);
+}
+.board-hero h1 { margin-bottom: 0.5rem; }
+.board-dedication { color: var(--text-secondary); max-width: 480px; margin: 0 auto; }
+
+.board-no-messages {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+}
+
+.messages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+.message-card {
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+.message-text { margin-bottom: 0.75rem; line-height: 1.55; }
+.message-author {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* FAB */
+.fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--warm-coral);
+  color: var(--white);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.2s, background 0.2s;
+}
+.fab:hover { transform: scale(1.08); background: #b5684a; }
+
+@media (max-width: 600px) {
+  .messages-grid { grid-template-columns: 1fr; }
+}
